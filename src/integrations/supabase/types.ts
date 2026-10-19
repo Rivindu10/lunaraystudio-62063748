@@ -14,16 +14,186 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      availability: {
+        Row: {
+          day: string
+          note: string | null
+          status: Database["public"]["Enums"]["day_status"]
+          updated_at: string
+        }
+        Insert: {
+          day: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["day_status"]
+          updated_at?: string
+        }
+        Update: {
+          day?: string
+          note?: string | null
+          status?: Database["public"]["Enums"]["day_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          admin_note: string | null
+          booking_date: string
+          created_at: string
+          email: string
+          end_date: string | null
+          full_name: string
+          id: string
+          location: string
+          message: string | null
+          phone: string
+          preferred_time: string
+          service: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          booking_date: string
+          created_at?: string
+          email: string
+          end_date?: string | null
+          full_name: string
+          id?: string
+          location: string
+          message?: string | null
+          phone: string
+          preferred_time: string
+          service: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          booking_date?: string
+          created_at?: string
+          email?: string
+          end_date?: string | null
+          full_name?: string
+          id?: string
+          location?: string
+          message?: string | null
+          phone?: string
+          preferred_time?: string
+          service?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          service: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          service?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          service?: string | null
+        }
+        Relationships: []
+      }
+      portfolio_photos: {
+        Row: {
+          alt: string
+          category: Database["public"]["Enums"]["portfolio_category"]
+          created_at: string
+          id: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          alt?: string
+          category: Database["public"]["Enums"]["portfolio_category"]
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          alt?: string
+          category?: Database["public"]["Enums"]["portfolio_category"]
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_blocked_dates: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          day: string
+          status: string
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
+      booking_status: "pending" | "confirmed" | "rejected" | "cancelled"
+      day_status: "available" | "unavailable" | "booked"
+      portfolio_category:
+        | "graduation"
+        | "birthday"
+        | "wedding"
+        | "engagement"
+        | "events"
+      service_type:
+        | "graduation"
+        | "birthday"
+        | "wedding"
+        | "engagement"
+        | "events"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +320,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+      booking_status: ["pending", "confirmed", "rejected", "cancelled"],
+      day_status: ["available", "unavailable", "booked"],
+      portfolio_category: [
+        "graduation",
+        "birthday",
+        "wedding",
+        "engagement",
+        "events",
+      ],
+      service_type: [
+        "graduation",
+        "birthday",
+        "wedding",
+        "engagement",
+        "events",
+      ],
+    },
   },
 } as const
