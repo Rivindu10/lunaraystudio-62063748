@@ -14,7 +14,7 @@ import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate }
 
 export const Route = createFileRoute("/booking")({
   validateSearch: (s: Record<string, unknown>): { service?: ServiceSlug } => {
-    const v = s.service;
+    const v = s["service"];
     return SERVICES.some((x) => x.slug === v) ? { service: v as ServiceSlug } : {};
   },
   head: () => ({
@@ -31,7 +31,9 @@ export const Route = createFileRoute("/booking")({
 const TIMES = ["Morning (8am – 12pm)", "Afternoon (12pm – 4pm)", "Golden hour (4pm – 7pm)", "Evening (after 7pm)", "Full day"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type Errors = Partial<Record<string, string>>;
+type Field = "full_name"|"email"|"phone"|"service"|"date"|"preferred_time"|"location"|"end_date"|"form";
+type Errors = Partial<Record<Field, string>>;
+type FormVals = { full_name: string; email: string; phone: string; service: string; preferred_time: string; location: string; end_date: string; message: string };
 
 function Booking() {
   const search = Route.useSearch();
@@ -44,8 +46,8 @@ function Booking() {
   const formRef = useRef<HTMLDivElement>(null);
 
   const grid = monthGrid(month);
-  const from = toISODate(grid[0]);
-  const to = toISODate(grid[41]);
+  const from = toISODate(grid[0]!);
+  const to = toISODate(grid[41]!);
   const blockedQ = useQuery({
     queryKey: ["blocked", from, to],
     queryFn: async () => {
@@ -79,7 +81,7 @@ function Booking() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const v = Object.fromEntries(f.entries()) as Record<string, string>;
+    const v = Object.fromEntries(f.entries()) as unknown as FormVals;
     const errs: Errors = {};
     if (!v.full_name?.trim()) errs.full_name = "Please enter your full name.";
     if (!EMAIL_RE.test(v.email ?? "")) errs.email = "Please enter a valid email address.";
@@ -132,7 +134,7 @@ function Booking() {
     );
   }
 
-  const field = (name: string) => errors[name] && <p className="mt-1.5 text-xs text-destructive" role="alert">{errors[name]}</p>;
+  const field = (name: Field) => errors[name] && <p className="mt-1.5 text-xs text-destructive" role="alert">{errors[name]}</p>;
 
   return (
     <>
@@ -177,7 +179,7 @@ function Booking() {
             </div>
             <div>
               <Label htmlFor="service">Photography service *</Label>
-              <select id="service" name="service" defaultValue={search.service ?? ""} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
+              <select id="service" name="service" defaultValue={(search as { service?: string }).service ?? ""} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
                 <option value="" disabled>Select a service</option>
                 {SERVICES.map((s) => <option key={s.slug} value={s.slug}>{s.title}</option>)}
               </select>

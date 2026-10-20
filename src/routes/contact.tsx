@@ -23,13 +23,13 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const v = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    const errs: Record<string, string> = {};
+    const v = Object.fromEntries(new FormData(form).entries()) as unknown as { name: string; email: string; service: string; message: string };
+    const errs: { name?: string; email?: string; message?: string } = {};
     if (!v.name?.trim()) errs.name = "Please enter your name.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email ?? "")) errs.email = "Please enter a valid email.";
     if (!v.message?.trim()) errs.message = "Please write a message.";
