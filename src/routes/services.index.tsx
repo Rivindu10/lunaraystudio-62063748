@@ -6,9 +6,9 @@ import { SERVICES } from "@/lib/site";
 export const Route = createFileRoute("/services/")({
   head: () => ({
     meta: [
-      { title: "Photography Services | Lunary Studio" },
-      { name: "description", content: "Graduation, birthday, wedding, engagement and events photography by Lunary Studio." },
-      { property: "og:title", content: "Photography Services | Lunary Studio" },
+      { title: "Photography Services | Lunaray Studio" },
+      { name: "description", content: "Graduation, birthday, wedding, engagement and events photography by Lunaray Studio." },
+      { property: "og:title", content: "Photography Services | Lunaray Studio" },
       { property: "og:description", content: "Five ways we tell your story — graduations, birthdays, weddings, engagements and events." },
     ],
   }),

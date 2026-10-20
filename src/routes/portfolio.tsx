@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
     meta: [
-      { title: "Portfolio | Lunary Studio" },
-      { name: "description", content: "Explore Lunary Studio's portfolio of weddings, engagements, graduations, birthdays and events." },
-      { property: "og:title", content: "Portfolio | Lunary Studio" },
+      { title: "Portfolio | Lunaray Studio" },
+      { name: "description", content: "Explore Lunaray Studio's portfolio of weddings, engagements, graduations, birthdays and events." },
+      { property: "og:title", content: "Portfolio | Lunaray Studio" },
       { property: "og:description", content: "Cinematic, timeless photography — explore our work." },
     ],
   }),

@@ -57,9 +57,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lunary Studio | Timeless Photography" },
-      { name: "description", content: "Discover Lunary Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
-      { property: "og:title", content: "Lunary Studio | Timeless Photography" },
+      { title: "Lunaray Studio | Timeless Photography" },
+      { name: "description", content: "Discover Lunaray Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
+      { property: "og:title", content: "Lunaray Studio | Timeless Photography" },
       { property: "og:description", content: "Professional graduation, birthday, wedding, engagement, and event photography." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

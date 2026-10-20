@@ -14,12 +14,12 @@ export const Route = createFileRoute("/services/$slug")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.title} | Lunary Studio` },
+          { title: `${loaderData.title} | Lunaray Studio` },
           { name: "description", content: loaderData.description },
-          { property: "og:title", content: `${loaderData.title} | Lunary Studio` },
+          { property: "og:title", content: `${loaderData.title} | Lunaray Studio` },
           { property: "og:description", content: loaderData.description },
         ]
-      : [{ title: "Service | Lunary Studio" }, { name: "robots", content: "noindex" }],
+      : [{ title: "Service | Lunaray Studio" }, { name: "robots", content: "noindex" }],
   }),
   component: ServicePage,
 });

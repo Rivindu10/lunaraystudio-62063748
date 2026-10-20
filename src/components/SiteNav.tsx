@@ -28,8 +28,8 @@ export function SiteNav() {
       )}
     >
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 md:px-8" aria-label="Main">
-        <Link to="/" className="flex flex-col leading-none" aria-label="Lunary Studio home">
-          <span className="font-serif text-2xl tracking-[0.12em] md:text-[1.7rem]">LUNARY</span>
+        <Link to="/" className="flex flex-col leading-none" aria-label="Lunaray Studio home">
+          <span className="font-serif text-2xl tracking-[0.12em] md:text-[1.7rem]">LUNARAY</span>
           <span className="eyebrow mt-1 text-[0.55rem] opacity-80">Studio · Photography</span>
         </Link>
 

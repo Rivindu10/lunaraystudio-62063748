@@ -51,7 +51,7 @@ export async function fetchUploadedPhotos(): Promise<Photo[]> {
   return data.map((p, i) => ({
     id: p.id,
     src: signed?.[i]?.signedUrl ?? "",
-    alt: p.alt || "Lunary Studio photograph",
+    alt: p.alt || "Lunaray Studio photograph",
     category: p.category,
   })).filter((p) => p.src);
 }

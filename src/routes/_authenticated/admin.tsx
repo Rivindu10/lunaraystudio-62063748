@@ -9,7 +9,7 @@ import { SERVICES } from "@/lib/site";
 import { formatLong, isPastDate, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Studio Dashboard | Lunary Studio" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Studio Dashboard | Lunaray Studio" }, { name: "robots", content: "noindex" }] }),
   component: Admin,
 });
 

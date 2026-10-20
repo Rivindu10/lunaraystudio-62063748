@@ -12,9 +12,9 @@ import { CONTACT, SERVICES } from "@/lib/site";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact | Lunary Studio" },
-      { name: "description", content: "Contact Lunary Studio by phone, WhatsApp or email to discuss your photography session." },
-      { property: "og:title", content: "Contact Lunary Studio" },
+      { title: "Contact | Lunaray Studio" },
+      { name: "description", content: "Contact Lunaray Studio by phone, WhatsApp or email to discuss your photography session." },
+      { property: "og:title", content: "Contact Lunaray Studio" },
       { property: "og:description", content: "Let's talk about your story — call, WhatsApp or email us." },
     ],
   }),
@@ -60,7 +60,7 @@ function Contact() {
       </PageHeader>
       <section className="mx-auto grid max-w-6xl gap-16 px-5 py-20 md:grid-cols-[1fr_1.3fr] md:px-8">
         <div>
-          <h2 className="font-serif text-4xl text-forest">Lunary Studio</h2>
+          <h2 className="font-serif text-4xl text-forest">Lunaray Studio</h2>
           <ul className="mt-10 space-y-8">
             {items.map(({ icon: Icon, label, value, href, ext }) => (
               <li key={label}>

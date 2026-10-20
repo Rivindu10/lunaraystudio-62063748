@@ -7,7 +7,7 @@ export function SiteFooter() {
     <footer className="bg-forest text-forest-foreground">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 md:grid-cols-4 md:px-8">
         <div className="md:col-span-1">
-          <p className="font-serif text-3xl tracking-[0.12em]">LUNARY</p>
+          <p className="font-serif text-3xl tracking-[0.12em]">LUNARAY</p>
           <p className="eyebrow mt-1 text-[0.55rem] opacity-70">Studio · Photography</p>
           <p className="mt-6 max-w-xs text-sm leading-relaxed opacity-75">
             Timeless, artistic photography for the moments that become your story.
@@ -49,7 +49,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-forest-foreground/15">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 text-xs opacity-60 md:flex-row md:justify-between md:px-8">
-          <p>© {new Date().getFullYear()} Lunary Studio. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Lunaray Studio. All rights reserved.</p>
           <Link to="/admin" className="hover:opacity-100">Studio login</Link>
         </div>
       </div>
@@ -63,7 +63,7 @@ export function WhatsAppButton() {
       href={CONTACT.whatsapp}
       target="_blank"
       rel="noreferrer"
-      aria-label="Chat with Lunary Studio on WhatsApp"
+      aria-label="Chat with Lunaray Studio on WhatsApp"
       className="fixed bottom-5 right-5 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-primary p-3.5 text-primary-foreground shadow-soft transition hover:scale-105 hover:bg-forest"
     >
       <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">

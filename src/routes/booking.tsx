@@ -19,9 +19,9 @@ export const Route = createFileRoute("/booking")({
   },
   head: () => ({
     meta: [
-      { title: "Book Your Session | Lunary Studio" },
-      { name: "description", content: "Check availability and request your photography session with Lunary Studio." },
-      { property: "og:title", content: "Book Your Session | Lunary Studio" },
+      { title: "Book Your Session | Lunaray Studio" },
+      { name: "description", content: "Check availability and request your photography session with Lunaray Studio." },
+      { property: "og:title", content: "Book Your Session | Lunaray Studio" },
       { property: "og:description", content: "Choose a date and request your graduation, wedding, engagement, birthday or event session." },
     ],
   }),

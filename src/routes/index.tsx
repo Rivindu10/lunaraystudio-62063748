@@ -11,10 +11,10 @@ import { SERVICES } from "@/lib/site";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lunary Studio | Timeless Photography" },
-      { name: "description", content: "Discover Lunary Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
-      { property: "og:title", content: "Lunary Studio | Timeless Photography" },
-      { property: "og:description", content: "Every moment has a story. Timeless, artistic photography by Lunary Studio." },
+      { title: "Lunaray Studio | Timeless Photography" },
+      { name: "description", content: "Discover Lunaray Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
+      { property: "og:title", content: "Lunaray Studio | Timeless Photography" },
+      { property: "og:description", content: "Every moment has a story. Timeless, artistic photography by Lunaray Studio." },
     ],
   }),
   component: Home,
@@ -34,7 +34,7 @@ function Home() {
         <img src={hero} alt="Bride and groom walking hand in hand through an olive grove at sunset" width={1920} height={1088} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 text-forest-foreground md:px-8 md:pb-28">
-          <p className="eyebrow animate-fade-up text-lime">Lunary Studio</p>
+          <p className="eyebrow animate-fade-up text-lime">Lunaray Studio</p>
           <h1 className="mt-5 max-w-3xl animate-fade-up font-serif text-6xl italic leading-[0.95] md:text-8xl" style={{ animationDelay: "150ms" }}>
             Every Moment Has a Story.
           </h1>
@@ -57,12 +57,12 @@ function Home() {
 
       <section className="bg-sage/30">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 md:grid-cols-2 md:px-8 md:py-32">
-          <img src={about} alt="Lunary Studio photographer framing a shot by the window" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
+          <img src={about} alt="Lunaray Studio photographer framing a shot by the window" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
           <div>
             <p className="eyebrow text-primary">About the studio</p>
             <h2 className="mt-4 font-serif text-4xl leading-tight text-forest md:text-6xl">Behind Every Photograph, There's a Story.</h2>
             <p className="mt-6 leading-relaxed text-muted-foreground">
-              At Lunary Studio, we believe the most beautiful photographs are more than images. They are memories, emotions, and stories you can return to for a lifetime.
+              At Lunaray Studio, we believe the most beautiful photographs are more than images. They are memories, emotions, and stories you can return to for a lifetime.
             </p>
             <Button asChild variant="line" size="xl" className="mt-10"><Link to="/about">Our Story</Link></Button>
           </div>

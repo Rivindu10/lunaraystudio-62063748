@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Studio Login | Lunary Studio" },
-      { name: "description", content: "Studio owner sign-in for Lunary Studio." },
-      { property: "og:title", content: "Studio Login | Lunary Studio" },
+      { title: "Studio Login | Lunaray Studio" },
+      { name: "description", content: "Studio owner sign-in for Lunaray Studio." },
+      { property: "og:title", content: "Studio Login | Lunaray Studio" },
       { property: "og:description", content: "Studio owner sign-in." },
       { name: "robots", content: "noindex" },
     ],
