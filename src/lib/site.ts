@@ -8,7 +8,7 @@ export const CONTACT = {
   phoneDisplay: "+94 77 559 5313",
   phoneTel: "+94775595313",
   whatsapp: "https://wa.me/94775595313",
-  email: "sanjanakaveen2000@gmail.com",
+  email: "sanjanakavee2000@gmail.com",
   // Add real profile URLs when available; empty entries are hidden.
   social: { instagram: "", facebook: "", tiktok: "" },
 };
