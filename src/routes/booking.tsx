@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { SERVICES, type ServiceSlug } from "@/lib/site";
+import { SERVICES, TIMES, type ServiceSlug } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/booking")({
@@ -28,7 +29,6 @@ export const Route = createFileRoute("/booking")({
   component: Booking,
 });
 
-const TIMES = ["Morning (8am – 12pm)", "Afternoon (12pm – 4pm)", "Golden hour (4pm – 7pm)", "Evening (after 7pm)", "Full day"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Field = "full_name"|"email"|"phone"|"service"|"date"|"preferred_time"|"location"|"end_date"|"form";
