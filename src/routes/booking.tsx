@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyNewBooking } from "@/lib/booking-notify.functions";
 import { SERVICES, TIMES, type ServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
@@ -126,6 +127,8 @@ function Booking() {
       blockedQ.refetch();
       return;
     }
+    // Email the studio about the new request; the booking is already saved, so never block on this.
+    void notifyNewBooking({ data: { email: v.email.trim().slice(0, 255), booking_date: selected!, preferred_time: v.preferred_time } }).catch(() => {});
     setDone({ date: selected!, name: v.full_name.trim() });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
