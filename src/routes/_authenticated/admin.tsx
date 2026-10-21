@@ -82,6 +82,11 @@ function Admin() {
   };
 
   const filtered = list.filter((b) => (!fStatus || b.status === fStatus) && (!fService || b.service === fService) && (!day || b.booking_date === day));
+  // All bookings in one list, grouped by date.
+  const grouped = [...new Set(filtered.map((b) => b.booking_date))].sort().map((d) => ({
+    date: d,
+    items: filtered.filter((b) => b.booking_date === d),
+  }));
 
   return (
     <div className="mx-auto max-w-7xl px-5 pb-20 pt-32 md:px-8">
@@ -116,25 +121,38 @@ function Admin() {
             </select>
             {day && <Button size="sm" variant="ghost" onClick={() => setDay(null)}>Clear date filter</Button>}
           </div>
-          <ul className="mt-6 space-y-4">
-            {filtered.length === 0 && <li className="text-muted-foreground">No booking requests.</li>}
-            {filtered.map((b) => (
-              <li key={b.id} className="border border-border bg-card p-5 text-sm">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="font-serif text-xl text-forest">{b.full_name}</p>
-                  <span className="eyebrow text-primary">{b.status}</span>
+          <div className="mt-6 space-y-8">
+            {grouped.length === 0 && <p className="text-muted-foreground">No booking requests.</p>}
+            {grouped.map((g) => (
+              <section key={g.date} aria-label={`Bookings on ${formatLong(g.date)}`}>
+                <div className="flex items-baseline justify-between border-b border-border pb-2">
+                  <h2 className="font-serif text-2xl text-forest">{formatLong(g.date)}</h2>
+                  <span className="eyebrow text-muted-foreground">
+                    {g.items.length} booking{g.items.length === 1 ? "" : "s"}
+                    {g.items.some((b) => b.status === "pending") && " · pending"}
+                  </span>
                 </div>
-                <p className="mt-1 text-muted-foreground">{formatLong(b.booking_date)}{b.end_date ? ` → ${formatLong(b.end_date)}` : ""} · {b.preferred_time} · {b.service}</p>
-                <p className="mt-1">{b.location}</p>
-                <p className="mt-1"><a className="underline" href={`mailto:${b.email}`}>{b.email}</a> · <a className="underline" href={`tel:${b.phone}`}>{b.phone}</a></p>
-                {b.message && <p className="mt-2 italic text-muted-foreground">“{b.message}”</p>}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {b.status === "pending" && <><Button size="sm" variant="brand" onClick={() => setStatus(b.id, "confirmed")}>Approve</Button><Button size="sm" variant="outline" onClick={() => setStatus(b.id, "rejected")}>Reject</Button></>}
-                  {b.status === "confirmed" && <Button size="sm" variant="outline" onClick={() => setStatus(b.id, "cancelled")}>Cancel</Button>}
-                </div>
-              </li>
+                <ul className="mt-4 space-y-4">
+                  {g.items.map((b) => (
+                    <li key={b.id} className="border border-border bg-card p-5 text-sm">
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="font-serif text-xl text-forest">{b.full_name}</p>
+                        <span className="eyebrow text-primary">{b.status}</span>
+                      </div>
+                      <p className="mt-1 text-muted-foreground">{b.end_date ? `${formatLong(b.booking_date)} → ${formatLong(b.end_date)} · ` : ""}{b.preferred_time} · {b.service}</p>
+                      <p className="mt-1">{b.location}</p>
+                      <p className="mt-1"><a className="underline" href={`mailto:${b.email}`}>{b.email}</a> · <a className="underline" href={`tel:${b.phone}`}>{b.phone}</a></p>
+                      {b.message && <p className="mt-2 italic text-muted-foreground">“{b.message}”</p>}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {b.status === "pending" && <><Button size="sm" variant="brand" onClick={() => setStatus(b.id, "confirmed")}>Approve</Button><Button size="sm" variant="outline" onClick={() => setStatus(b.id, "rejected")}>Reject</Button></>}
+                        {b.status === "confirmed" && <Button size="sm" variant="outline" onClick={() => setStatus(b.id, "cancelled")}>Cancel</Button>}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>
