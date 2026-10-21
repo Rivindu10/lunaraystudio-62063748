@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { MonthCalendar, CalendarLegend, type DayState } from "@/components/MonthCalendar";
-import { SERVICES } from "@/lib/site";
+import { SERVICES, TIMES } from "@/lib/site";
 import { formatLong, isPastDate, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -61,7 +61,9 @@ function Admin() {
   const availMap = new Map((avail.data ?? []).map((a) => [a.day, a.status]));
   const getState = (d: Date): DayState => {
     const iso = toISODate(d);
-    if (list.some((b) => b.booking_date === iso && b.status === "confirmed") || availMap.get(iso) === "booked") return "booked";
+    const confirmed = list.filter((b) => b.booking_date === iso && b.status === "confirmed");
+    const fullyBooked = confirmed.some((b) => b.preferred_time === "Full day") || confirmed.length >= TIMES.length;
+    if (fullyBooked || availMap.get(iso) === "booked") return "booked";
     if (availMap.get(iso) === "unavailable") return "unavailable";
     if (list.some((b) => b.booking_date === iso && b.status === "pending")) return "pending";
     return isPastDate(d) ? "past" : "available";
@@ -69,7 +71,7 @@ function Admin() {
 
   const setStatus = async (id: string, status: Status) => {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
-    if (error) toast.error(error.message.includes("duplicate") ? "Another booking is already confirmed for this date." : error.message);
+    if (error) toast.error(error.message.includes("time slot") ? "Another booking is already confirmed for this time slot." : error.message);
     else toast.success(`Booking ${status}`);
     qc.invalidateQueries({ queryKey: ["admin-bookings"] });
   };

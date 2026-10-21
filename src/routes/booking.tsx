@@ -214,11 +214,44 @@ function Booking() {
               </div>
             </div>
             <div>
-              <Label htmlFor="preferred_time">Preferred time *</Label>
-              <select id="preferred_time" name="preferred_time" defaultValue="" className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.preferred_time}>
-                <option value="" disabled>Select a time range</option>
-                {TIMES.map((t) => <option key={t}>{t}</option>)}
-              </select>
+              <Label>Preferred time *</Label>
+              {selected && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Available time slots on {formatLong(selected)}
+                  {slotsQ.isFetching && " — checking…"}
+                </p>
+              )}
+              <input type="hidden" name="preferred_time" value={time} />
+              <div className="mt-2 grid gap-2" role="radiogroup" aria-label="Preferred time">
+                {TIMES.map((t) => {
+                  const isTaken = takenSlots.includes(t);
+                  const onlyLeft = !!selected && !isTaken && TIMES.every((x) => x === t || takenSlots.includes(x));
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      role="radio"
+                      aria-checked={time === t}
+                      disabled={isTaken}
+                      onClick={() => setTime(t)}
+                      className={cn(
+                        "flex items-center justify-between rounded-md border px-3 py-2.5 text-sm transition",
+                        time === t ? "border-primary bg-lime/30 text-forest" : "border-input bg-card text-forest hover:border-primary/50",
+                        isTaken && "cursor-not-allowed line-through opacity-50",
+                      )}
+                    >
+                      <span>{t}</span>
+                      {isTaken ? (
+                        <span className="text-xs">Booked</span>
+                      ) : onlyLeft ? (
+                        <span className="eyebrow text-primary">Only slot left</span>
+                      ) : (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
               {field("preferred_time")}
             </div>
             <div>
