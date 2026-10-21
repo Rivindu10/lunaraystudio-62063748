@@ -43,21 +43,12 @@ export const CATEGORIES: { value: PortfolioCategory | "all"; label: string }[] =
 ];
 
 export async function fetchUploadedPhotos(): Promise<Photo[]> {
-  const { data, error } = await supabase
-    .from("portfolio_photos")
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
-  if (error || !data?.length) return [];
-  const { data: signed } = await supabase.storage
-    .from("portfolio")
-    .createSignedUrls(data.map((p) => p.storage_path), 60 * 60 * 24 * 7);
-  return data.map((p, i) => ({
-    id: p.id,
-    src: signed?.[i]?.signedUrl ?? "",
-    alt: p.alt || "Lunaray Studio photograph",
-    category: p.category,
-  })).filter((p) => p.src);
+  const { getUploadedPhotoUrls } = await import("./portfolio-photos.functions");
+  try {
+    return (await getUploadedPhotoUrls()) as Photo[];
+  } catch {
+    return [];
+  }
 }
 
 /* -------------------------------------------------------------------------
