@@ -55,3 +55,101 @@ export async function fetchUploadedPhotos(): Promise<Photo[]> {
     category: p.category,
   })).filter((p) => p.src);
 }
+
+/* -------------------------------------------------------------------------
+ * Collections ("Our Work")
+ *
+ * Every collection lives in its own folder:
+ *   src/assets/portfolio/<category>/<collection-folder>/<photos...>
+ *
+ * <category> must be one of: graduation, birthday, wedding, engagement, events.
+ * To add a collection, just create a new folder and drop photos in it — it
+ * appears on the site automatically (photos are ordered by file name, and the
+ * first one is the cover). Optionally add a nicer title / description / date
+ * for it in COLLECTION_INFO below, keyed by "<category>/<collection-folder>".
+ * ---------------------------------------------------------------------- */
+
+export interface Collection {
+  slug: string;
+  category: ServiceSlug;
+  title: string;
+  description: string;
+  /** Free-text date shown on the card, e.g. "March 2026". */
+  date?: string | undefined;
+  cover: string;
+  photos: Photo[];
+}
+
+export const COLLECTION_INFO: Record<string, { title?: string; description?: string; date?: string }> = {
+  "wedding/olive-grove-wedding": {
+    title: "Olive Grove Wedding",
+    description: "A sunset ceremony among the olive trees — vows, bouquets and quiet moments.",
+  },
+  "graduation/class-of-2026": {
+    title: "Class of 2026",
+    description: "Caps, gowns and the proud smiles of graduation day.",
+  },
+  "engagement/golden-meadow": {
+    title: "Golden Meadow Engagement",
+    description: "A golden-hour session in tall grass, just the two of them.",
+  },
+  "birthday/garden-birthday": {
+    title: "Garden Birthday",
+    description: "Candles, laughter and string lights on a milestone birthday.",
+  },
+  "events/candlelit-evening": {
+    title: "Candlelit Evening",
+    description: "A relaxed garden reception lit by candles and good company.",
+  },
+};
+
+const prettify = (folder: string) =>
+  folder.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+const COLLECTION_FILES = import.meta.glob<string>(
+  "/src/assets/portfolio/*/*/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true, import: "default" },
+);
+
+const VALID_CATEGORIES: readonly string[] = ["graduation", "birthday", "wedding", "engagement", "events"];
+
+function buildCollections(): Collection[] {
+  const groups = new Map<string, { category: ServiceSlug; folder: string; files: [string, string][] }>();
+  for (const [path, url] of Object.entries(COLLECTION_FILES)) {
+    const [category, folder] = path.replace("/src/assets/portfolio/", "").split("/");
+    if (!category || !folder || !VALID_CATEGORIES.includes(category)) continue;
+    const key = `${category}/${folder}`;
+    const g = groups.get(key) ?? { category: category as ServiceSlug, folder, files: [] };
+    g.files.push([path, url]);
+    groups.set(key, g);
+  }
+  return [...groups.entries()]
+    .map(([key, g]) => {
+      const info = COLLECTION_INFO[key] ?? {};
+      const title = info.title ?? prettify(g.folder);
+      const photos: Photo[] = g.files
+        .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+        .map(([path, src], i) => ({ id: path, src, alt: `${title} — photo ${i + 1}`, category: g.category }));
+      return {
+        slug: g.folder,
+        category: g.category,
+        title,
+        description: info.description ?? "",
+        date: info.date,
+        cover: photos[0]!.src,
+        photos,
+      } satisfies Collection;
+    })
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+export const COLLECTIONS: Collection[] = buildCollections();
+
+export const collectionsByCategory = (cat: ServiceSlug | "all") =>
+  cat === "all" ? COLLECTIONS : COLLECTIONS.filter((c) => c.category === cat);
+
+export const findCollection = (category: string, slug: string) =>
+  COLLECTIONS.find((c) => c.category === category && c.slug === slug);
+
+export const categoryLabel = (cat: string) =>
+  CATEGORIES.find((c) => c.value === cat)?.label ?? cat;

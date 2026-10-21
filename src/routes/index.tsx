@@ -70,10 +70,10 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-32">
-        <SectionTitle eyebrow="Selected work" title="The Portfolio" />
+        <SectionTitle eyebrow="Selected work" title="Our Work" />
         <div className="mt-14"><Gallery photos={SAMPLE_PHOTOS.slice(0, 6)} /></div>
         <div className="mt-12 text-center">
-          <Button asChild variant="line" size="xl"><Link to="/portfolio">View Full Portfolio</Link></Button>
+          <Button asChild variant="line" size="xl"><Link to="/portfolio">View All Collections</Link></Button>
         </div>
       </section>
 
