@@ -8,11 +8,14 @@ import about from "@/assets/about.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import type { ServiceSlug } from "./site";
 
+/** Portfolio categories: the bookable services plus portfolio-only ones. */
+export type PortfolioCategory = ServiceSlug | "casual";
+
 export interface Photo {
   id: string;
   src: string;
   alt: string;
-  category: ServiceSlug;
+  category: PortfolioCategory;
 }
 
 /**
@@ -29,13 +32,14 @@ export const SAMPLE_PHOTOS: Photo[] = [
   { id: "s7", src: about, alt: "Photographer framing a shot by the window", category: "events" },
 ];
 
-export const CATEGORIES: { value: ServiceSlug | "all"; label: string }[] = [
+export const CATEGORIES: { value: PortfolioCategory | "all"; label: string }[] = [
   { value: "all", label: "All Work" },
   { value: "graduation", label: "Graduation" },
   { value: "birthday", label: "Birthdays" },
   { value: "wedding", label: "Weddings" },
   { value: "engagement", label: "Engagements" },
   { value: "events", label: "Events" },
+  { value: "casual", label: "Casual Shoot" },
 ];
 
 export async function fetchUploadedPhotos(): Promise<Photo[]> {
@@ -62,7 +66,7 @@ export async function fetchUploadedPhotos(): Promise<Photo[]> {
  * Every collection lives in its own folder:
  *   src/assets/portfolio/<category>/<collection-folder>/<photos...>
  *
- * <category> must be one of: graduation, birthday, wedding, engagement, events.
+ * <category> must be one of: graduation, birthday, wedding, engagement, events, casual.
  * To add a collection, just create a new folder and drop photos in it — it
  * appears on the site automatically (photos are ordered by file name, and the
  * first one is the cover). Optionally add a nicer title / description / date
@@ -71,7 +75,7 @@ export async function fetchUploadedPhotos(): Promise<Photo[]> {
 
 export interface Collection {
   slug: string;
-  category: ServiceSlug;
+  category: PortfolioCategory;
   title: string;
   description: string;
   /** Free-text date shown on the card, e.g. "March 2026". */
@@ -97,6 +101,10 @@ export const COLLECTION_INFO: Record<string, { title?: string; description?: str
     title: "Garden Birthday",
     description: "Candles, laughter and string lights on a milestone birthday.",
   },
+  "casual/everyday-moments": {
+    title: "Everyday Moments",
+    description: "Relaxed, natural shoots — no occasion needed, just you being you.",
+  },
   "events/candlelit-evening": {
     title: "Candlelit Evening",
     description: "A relaxed garden reception lit by candles and good company.",
@@ -111,15 +119,15 @@ const COLLECTION_FILES = import.meta.glob<string>(
   { eager: true, import: "default" },
 );
 
-const VALID_CATEGORIES: readonly string[] = ["graduation", "birthday", "wedding", "engagement", "events"];
+const VALID_CATEGORIES: readonly string[] = ["graduation", "birthday", "wedding", "engagement", "events", "casual"];
 
 function buildCollections(): Collection[] {
-  const groups = new Map<string, { category: ServiceSlug; folder: string; files: [string, string][] }>();
+  const groups = new Map<string, { category: PortfolioCategory; folder: string; files: [string, string][] }>();
   for (const [path, url] of Object.entries(COLLECTION_FILES)) {
     const [category, folder] = path.replace("/src/assets/portfolio/", "").split("/");
     if (!category || !folder || !VALID_CATEGORIES.includes(category)) continue;
     const key = `${category}/${folder}`;
-    const g = groups.get(key) ?? { category: category as ServiceSlug, folder, files: [] };
+    const g = groups.get(key) ?? { category: category as PortfolioCategory, folder, files: [] };
     g.files.push([path, url]);
     groups.set(key, g);
   }
@@ -145,7 +153,7 @@ function buildCollections(): Collection[] {
 
 export const COLLECTIONS: Collection[] = buildCollections();
 
-export const collectionsByCategory = (cat: ServiceSlug | "all") =>
+export const collectionsByCategory = (cat: PortfolioCategory | "all") =>
   cat === "all" ? COLLECTIONS : COLLECTIONS.filter((c) => c.category === cat);
 
 export const findCollection = (category: string, slug: string) =>

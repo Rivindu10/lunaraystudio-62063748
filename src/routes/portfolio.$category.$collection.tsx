@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
 import { categoryLabel, findCollection } from "@/lib/portfolio";
+import { SERVICES } from "@/lib/site";
 
 export const Route = createFileRoute("/portfolio/$category/$collection")({
   loader: ({ params }) => {
@@ -42,7 +43,7 @@ function CollectionPage() {
         <Gallery photos={c.photos} />
         <div className="mt-16 text-center">
           <Button asChild variant="brand" size="xl">
-            <Link to="/booking" search={{ service: c.category }}>Book a Similar Session</Link>
+            <Link to="/booking" search={SERVICES.find((s) => s.slug === c.category) ? { service: c.category as never } : {}}>Book a Similar Session</Link>
           </Button>
         </div>
       </section>
