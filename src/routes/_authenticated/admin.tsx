@@ -139,7 +139,7 @@ function Admin() {
                         <p className="font-serif text-xl text-forest">{b.full_name}</p>
                         <span className="eyebrow text-primary">{b.status}</span>
                       </div>
-                      <p className="mt-1 text-muted-foreground">{b.preferred_time} · {b.service}</p>
+                      <p className="mt-1 text-muted-foreground">{b.end_date ? `${formatLong(b.booking_date)} → ${formatLong(b.end_date)} · ` : ""}{b.preferred_time} · {b.service}</p>
                       <p className="mt-1">{b.location}</p>
                       <p className="mt-1"><a className="underline" href={`mailto:${b.email}`}>{b.email}</a> · <a className="underline" href={`tel:${b.phone}`}>{b.phone}</a></p>
                       {b.message && <p className="mt-2 italic text-muted-foreground">“{b.message}”</p>}
