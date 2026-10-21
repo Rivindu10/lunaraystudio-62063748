@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public read portfolio images" ON storage.objects;
