@@ -39,6 +39,7 @@ function Booking() {
   const search = Route.useSearch();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [selected, setSelected] = useState<string | null>(null);
+  const [time, setTime] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -57,6 +58,19 @@ function Booking() {
     },
   });
   const blocked = blockedQ.data ?? new Map<string, string>();
+
+  // Time slots already taken on the selected date (confirmed bookings only).
+  const slotsQ = useQuery({
+    queryKey: ["taken-slots", selected],
+    enabled: !!selected,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_taken_slots", { _day: selected! });
+      if (error) throw error;
+      return (data ?? []).map((r) => r.preferred_time);
+    },
+  });
+  const takenSlots = slotsQ.data ?? [];
+  useEffect(() => setTime(""), [selected]);
 
   const getState = (d: Date): DayState => {
     if (isPastDate(d)) return "past";
