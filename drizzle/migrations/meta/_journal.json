@@ -29,6 +29,13 @@
       "when": 1792571568633,
       "tag": "0003_drop_public_portfolio_read",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792588760169,
+      "tag": "0004_slot_level_booking_availability",
+      "breakpoints": true
     }
   ]
 }

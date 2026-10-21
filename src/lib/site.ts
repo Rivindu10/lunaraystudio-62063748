@@ -89,3 +89,6 @@ export const NAV = [
   { to: "/booking", label: "Booking" },
   { to: "/contact", label: "Contact" },
 ] as const;
+
+/** Bookable time slots; "Full day" conflicts with every other slot on the same date. */
+export const TIMES = ["Morning (8am – 12pm)", "Afternoon (12pm – 4pm)", "Golden hour (4pm – 7pm)", "Evening (after 7pm)", "Full day"];

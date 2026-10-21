@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { MonthCalendar, CalendarLegend, type DayState } from "@/components/MonthCalendar";
@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { SERVICES, type ServiceSlug } from "@/lib/site";
+import { SERVICES, TIMES, type ServiceSlug } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/booking")({
@@ -28,7 +29,6 @@ export const Route = createFileRoute("/booking")({
   component: Booking,
 });
 
-const TIMES = ["Morning (8am – 12pm)", "Afternoon (12pm – 4pm)", "Golden hour (4pm – 7pm)", "Evening (after 7pm)", "Full day"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Field = "full_name"|"email"|"phone"|"service"|"date"|"preferred_time"|"location"|"end_date"|"form";
@@ -39,6 +39,7 @@ function Booking() {
   const search = Route.useSearch();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [selected, setSelected] = useState<string | null>(null);
+  const [time, setTime] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -57,6 +58,19 @@ function Booking() {
     },
   });
   const blocked = blockedQ.data ?? new Map<string, string>();
+
+  // Time slots already taken on the selected date (confirmed bookings only).
+  const slotsQ = useQuery({
+    queryKey: ["taken-slots", selected],
+    enabled: !!selected,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_taken_slots", { _day: selected! });
+      if (error) throw error;
+      return (data ?? []).map((r) => r.preferred_time);
+    },
+  });
+  const takenSlots = slotsQ.data ?? [];
+  useEffect(() => setTime(""), [selected]);
 
   const getState = (d: Date): DayState => {
     if (isPastDate(d)) return "past";
@@ -200,11 +214,44 @@ function Booking() {
               </div>
             </div>
             <div>
-              <Label htmlFor="preferred_time">Preferred time *</Label>
-              <select id="preferred_time" name="preferred_time" defaultValue="" className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.preferred_time}>
-                <option value="" disabled>Select a time range</option>
-                {TIMES.map((t) => <option key={t}>{t}</option>)}
-              </select>
+              <Label>Preferred time *</Label>
+              {selected && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Available time slots on {formatLong(selected)}
+                  {slotsQ.isFetching && " — checking…"}
+                </p>
+              )}
+              <input type="hidden" name="preferred_time" value={time} />
+              <div className="mt-2 grid gap-2" role="radiogroup" aria-label="Preferred time">
+                {TIMES.map((t) => {
+                  const isTaken = takenSlots.includes(t);
+                  const onlyLeft = !!selected && !isTaken && TIMES.every((x) => x === t || takenSlots.includes(x));
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      role="radio"
+                      aria-checked={time === t}
+                      disabled={isTaken}
+                      onClick={() => setTime(t)}
+                      className={cn(
+                        "flex items-center justify-between rounded-md border px-3 py-2.5 text-sm transition",
+                        time === t ? "border-primary bg-lime/30 text-forest" : "border-input bg-card text-forest hover:border-primary/50",
+                        isTaken && "cursor-not-allowed line-through opacity-50",
+                      )}
+                    >
+                      <span>{t}</span>
+                      {isTaken ? (
+                        <span className="text-xs">Booked</span>
+                      ) : onlyLeft ? (
+                        <span className="eyebrow text-primary">Only slot left</span>
+                      ) : (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
               {field("preferred_time")}
             </div>
             <div>
