@@ -104,8 +104,8 @@ export const NAV = [
 export const TIMES = ["Morning (8am – 12pm)", "Afternoon (12pm – 4pm)", "Golden hour (4pm – 7pm)", "Evening (after 7pm)", "Full day"];
 
 const fmtHour = (h: number) => `${String(h).padStart(2, "0")}:00`;
-/** Graduation sessions are booked hour by hour, 8am to 7pm. Labels must start with "HH:00" (parsed by the database). */
-export const GRADUATION_TIMES = Array.from({ length: 11 }, (_, i) => `${fmtHour(8 + i)} – ${fmtHour(9 + i)}`);
+/** Graduation sessions are booked hour by hour, 7am to 6pm. Labels must start with "HH:00" (parsed by the database). */
+export const GRADUATION_TIMES = Array.from({ length: 11 }, (_, i) => `${fmtHour(7 + i)} – ${fmtHour(8 + i)}`);
 
 export const timesFor = (service: string) => (service === "graduation" ? GRADUATION_TIMES : TIMES);
 
@@ -126,6 +126,6 @@ export const slotsOverlap = (a: string, b: string) => {
   return a1 < b2 && b1 < a2;
 };
 
-/** A day is full when every hour from 8am to midnight is covered by confirmed bookings. */
+/** A day is full when every hour from 7am to midnight is covered by confirmed bookings. */
 export const isDayFull = (taken: string[]) =>
-  taken.length > 0 && Array.from({ length: 16 }, (_, i) => 8 + i).every((h) => taken.some((t) => { const [s, e] = slotRange(t); return s <= h && h < e; }));
+  taken.length > 0 && Array.from({ length: 17 }, (_, i) => 7 + i).every((h) => taken.some((t) => { const [s, e] = slotRange(t); return s <= h && h < e; }));

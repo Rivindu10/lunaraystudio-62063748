@@ -43,6 +43,13 @@
       "when": 1792676898070,
       "tag": "0005_casual_service_and_hourly_slots",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792682115264,
+      "tag": "0006_graduation_hours_7_to_18",
+      "breakpoints": true
     }
   ]
 }
