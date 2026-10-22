@@ -1,14 +1,7 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# One group for all crawlers (a crawler-specific group would ignore the rules below).
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /auth
+
+Sitemap: https://lunaraystudio.lovable.app/sitemap.xml

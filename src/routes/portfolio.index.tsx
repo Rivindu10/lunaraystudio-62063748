@@ -4,16 +4,16 @@ import { PageHeader } from "@/components/PageHeader";
 import { CollectionCard } from "@/components/CollectionCard";
 import { CATEGORIES, COLLECTIONS, collectionsByCategory } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
+import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/portfolio/")({
-  head: () => ({
-    meta: [
-      { title: "Our Work | Lunaray Studio" },
-      { name: "description", content: "Browse Lunaray Studio's collections of weddings, engagements, graduations, birthdays and events — the memories we've had the joy of capturing." },
-      { property: "og:title", content: "Our Work | Lunaray Studio" },
-      { property: "og:description", content: "Collections of memories, grouped by occasion." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Our Work | Lunaray Studio",
+      description: "Browse Lunaray Studio's collections of weddings, engagements, graduations, birthdays, events and casual shoots — memories we've captured.",
+      path: "/portfolio",
+      jsonLd: breadcrumbs([{ name: "Home", path: "/" }, { name: "Our Work", path: "/portfolio" }]),
+    }),
   component: OurWork,
 });
 

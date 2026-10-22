@@ -2,16 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { ServiceCard } from "@/components/ServiceCard";
 import { SERVICES } from "@/lib/site";
+import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
-    meta: [
-      { title: "Photography Services | Lunaray Studio" },
-      { name: "description", content: "Graduation, birthday, wedding, engagement and events photography by Lunaray Studio." },
-      { property: "og:title", content: "Photography Services | Lunaray Studio" },
-      { property: "og:description", content: "Five ways we tell your story — graduations, birthdays, weddings, engagements and events." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Photography Services | Lunaray Studio",
+      description: "Graduation, birthday, wedding, engagement, event and casual shoot photography by Lunaray Studio. Explore our services and book your session.",
+      path: "/services",
+      jsonLd: breadcrumbs([{ name: "Home", path: "/" }, { name: "Services", path: "/services" }]),
+    }),
   component: Services,
 });
 

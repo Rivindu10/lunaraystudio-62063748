@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
 import { categoryLabel, findCollection } from "@/lib/portfolio";
 import { SERVICES } from "@/lib/site";
+import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/portfolio/$category/$collection")({
   loader: ({ params }) => {
@@ -10,15 +11,23 @@ export const Route = createFileRoute("/portfolio/$category/$collection")({
     if (!c) throw notFound();
     return { category: c.category, slug: c.slug, title: c.title, description: c.description };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title} | Lunaray Studio` },
-          { name: "description", content: loaderData.description || `${loaderData.title} — a collection by Lunaray Studio.` },
-          { property: "og:title", content: `${loaderData.title} | Lunaray Studio` },
-        ]
-      : [{ title: "Collection | Lunaray Studio" }, { name: "robots", content: "noindex" }],
-  }),
+  head: ({ loaderData }) => {
+    const c = loaderData ? findCollection(loaderData.category, loaderData.slug) : undefined;
+    if (!loaderData || !c)
+      return { meta: [{ title: "Collection | Lunaray Studio" }, { name: "robots", content: "noindex" }] };
+    const path = `/portfolio/${c.category}/${c.slug}`;
+    return seo({
+      title: `${c.title} | Lunaray Studio`,
+      description: c.description || `${c.title} — a ${categoryLabel(c.category).toLowerCase()} collection by Lunaray Studio.`,
+      path,
+      image: c.cover,
+      jsonLd: breadcrumbs([
+        { name: "Home", path: "/" },
+        { name: "Our Work", path: "/portfolio" },
+        { name: c.title, path },
+      ]),
+    });
+  },
   component: CollectionPage,
 });
 

@@ -3,16 +3,16 @@ import about from "@/assets/about.jpg";
 import engagement from "@/assets/engagement.jpg";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About | Lunaray Studio" },
-      { name: "description", content: "Meet Lunaray Studio — artistic, emotional photography for graduations, weddings, engagements, birthdays and events." },
-      { property: "og:title", content: "About Lunaray Studio" },
-      { property: "og:description", content: "Behind every photograph, there's a story." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "About | Lunaray Studio",
+      description: "Meet Lunaray Studio — artistic, emotional photography for graduations, weddings, engagements, birthdays, events and casual shoots.",
+      path: "/about",
+      jsonLd: breadcrumbs([{ name: "Home", path: "/" }, { name: "About", path: "/about" }]),
+    }),
   component: About,
 });
 

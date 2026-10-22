@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { seo } from "@/lib/seo";
 import hero from "@/assets/hero.jpg";
 import about from "@/assets/about.jpg";
 import { Button } from "@/components/ui/button";
@@ -9,14 +10,12 @@ import { SAMPLE_PHOTOS } from "@/lib/portfolio";
 import { SERVICES } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Lunaray Studio | Timeless Photography" },
-      { name: "description", content: "Discover Lunaray Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
-      { property: "og:title", content: "Lunaray Studio | Timeless Photography" },
-      { property: "og:description", content: "Every moment has a story. Timeless, artistic photography by Lunaray Studio." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Lunaray Studio | Timeless Photography",
+      description: "Lunaray Studio — professional graduation, birthday, wedding, engagement, event and casual photography. Explore our work and request your session.",
+      path: "/",
+    }),
   component: Home,
 });
 

@@ -17,6 +17,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter, WhatsAppButton } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_OG_IMAGE, SITE_NAME, jsonLdString, siteJsonLd } from "@/lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -58,12 +59,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lunaray Studio | Timeless Photography" },
-      { name: "description", content: "Discover Lunaray Studio — professional graduation, birthday, wedding, engagement, and event photography. Explore our portfolio and request your photography session." },
+      { name: "description", content: "Lunaray Studio — professional graduation, birthday, wedding, engagement, event and casual photography. Explore our work and request your session." },
+      { name: "theme-color", content: "#2f4a3a" },
+      { property: "og:site_name", content: SITE_NAME },
       { property: "og:title", content: "Lunaray Studio | Timeless Photography" },
-      { property: "og:description", content: "Professional graduation, birthday, wedding, engagement, and event photography." },
+      { property: "og:description", content: "Professional graduation, birthday, wedding, engagement, event and casual photography." },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
+    scripts: [{ type: "application/ld+json", children: jsonLdString(siteJsonLd()) }],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },

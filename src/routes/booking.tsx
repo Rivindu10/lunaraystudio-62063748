@@ -13,20 +13,19 @@ import { notifyNewBooking } from "@/lib/booking-notify.functions";
 import { SERVICES, slotsOverlap, timesFor, type ServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/booking")({
   validateSearch: (s: Record<string, unknown>): { service?: ServiceSlug } => {
     const v = s["service"];
     return SERVICES.some((x) => x.slug === v) ? { service: v as ServiceSlug } : {};
   },
-  head: () => ({
-    meta: [
-      { title: "Book Your Session | Lunaray Studio" },
-      { name: "description", content: "Check availability and request your photography session with Lunaray Studio." },
-      { property: "og:title", content: "Book Your Session | Lunaray Studio" },
-      { property: "og:description", content: "Choose a date and request your graduation, wedding, engagement, birthday or event session." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Book Your Session | Lunaray Studio",
+      description: "Check availability and request your photography session with Lunaray Studio — pick a date and time slot that suits you.",
+      path: "/booking",
+    }),
   component: Booking,
 });
 

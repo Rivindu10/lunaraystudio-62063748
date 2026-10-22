@@ -8,16 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { CONTACT, SERVICES } from "@/lib/site";
+import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact | Lunaray Studio" },
-      { name: "description", content: "Contact Lunaray Studio by phone, WhatsApp or email to discuss your photography session." },
-      { property: "og:title", content: "Contact Lunaray Studio" },
-      { property: "og:description", content: "Let's talk about your story — call, WhatsApp or email us." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Contact | Lunaray Studio",
+      description: "Contact Lunaray Studio by phone, WhatsApp or email to discuss your photography session.",
+      path: "/contact",
+      jsonLd: breadcrumbs([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }]),
+    }),
   component: Contact,
 });
 

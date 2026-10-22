@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
 import { serviceBySlug } from "@/lib/site";
 import { SAMPLE_PHOTOS, fetchUploadedPhotos } from "@/lib/portfolio";
+import { seo, breadcrumbs, serviceJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }) => {
@@ -11,16 +12,26 @@ export const Route = createFileRoute("/services/$slug")({
     if (!service) throw notFound();
     return { slug: service.slug, title: service.title, description: service.description };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title} | Lunaray Studio` },
-          { name: "description", content: loaderData.description },
-          { property: "og:title", content: `${loaderData.title} | Lunaray Studio` },
-          { property: "og:description", content: loaderData.description },
-        ]
-      : [{ title: "Service | Lunaray Studio" }, { name: "robots", content: "noindex" }],
-  }),
+  head: ({ loaderData }) => {
+    const service = loaderData ? serviceBySlug(loaderData.slug) : undefined;
+    if (!loaderData || !service)
+      return { meta: [{ title: "Service | Lunaray Studio" }, { name: "robots", content: "noindex" }] };
+    const path = `/services/${loaderData.slug}`;
+    return seo({
+      title: `${loaderData.title} | Lunaray Studio`,
+      description: loaderData.description,
+      path,
+      image: service.image,
+      jsonLd: [
+        serviceJsonLd(service),
+        breadcrumbs([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: loaderData.title, path },
+        ]),
+      ],
+    });
+  },
   component: ServicePage,
 });
 
