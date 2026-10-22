@@ -183,6 +183,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_day_full: { Args: { _day: string }; Returns: boolean }
+      slot_range: { Args: { t: string }; Returns: unknown }
     }
     Enums: {
       app_role: "admin"
@@ -200,6 +202,7 @@ export type Database = {
         | "wedding"
         | "engagement"
         | "events"
+        | "casual"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -343,6 +346,7 @@ export const Constants = {
         "wedding",
         "engagement",
         "events",
+        "casual",
       ],
     },
   },
