@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyNewBooking } from "@/lib/booking-notify.functions";
-import { SERVICES, TIMES, type ServiceSlug } from "@/lib/site";
+import { SERVICES, slotsOverlap, timesFor, type ServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
 
@@ -72,6 +72,8 @@ function Booking() {
   });
   const takenSlots = slotsQ.data ?? [];
   useEffect(() => setTime(""), [selected]);
+  const [service, setService] = useState<string>((search as { service?: string }).service ?? "");
+  const slots = timesFor(service);
 
   const getState = (d: Date): DayState => {
     if (isPastDate(d)) return "past";
@@ -196,7 +198,7 @@ function Booking() {
             </div>
             <div>
               <Label htmlFor="service">Photography service *</Label>
-              <select id="service" name="service" defaultValue={(search as { service?: string }).service ?? ""} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
+              <select id="service" name="service" value={service} onChange={(e) => { setService(e.target.value); setTime(""); }} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
                 <option value="" disabled>Select a service</option>
                 {SERVICES.map((s) => <option key={s.slug} value={s.slug}>{s.title}</option>)}
               </select>
@@ -224,11 +226,12 @@ function Booking() {
                   {slotsQ.isFetching && " — checking…"}
                 </p>
               )}
+              {service === "graduation" && <p className="mt-1 text-xs text-muted-foreground">Graduation sessions are booked by the hour.</p>}
               <input type="hidden" name="preferred_time" value={time} />
-              <div className="mt-2 grid gap-2" role="radiogroup" aria-label="Preferred time">
-                {TIMES.map((t) => {
-                  const isTaken = takenSlots.includes(t);
-                  const onlyLeft = !!selected && !isTaken && TIMES.every((x) => x === t || takenSlots.includes(x));
+              <div className={cn("mt-2 grid gap-2", service === "graduation" && "sm:grid-cols-2")} role="radiogroup" aria-label="Preferred time">
+                {slots.map((t) => {
+                  const isTaken = takenSlots.some((x) => slotsOverlap(x, t));
+                  const onlyLeft = !!selected && !isTaken && slots.every((x) => x === t || takenSlots.some((y) => slotsOverlap(y, x)));
                   return (
                     <button
                       key={t}

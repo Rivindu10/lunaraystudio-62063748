@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { MonthCalendar, CalendarLegend, type DayState } from "@/components/MonthCalendar";
-import { SERVICES, TIMES } from "@/lib/site";
+import { SERVICES, isDayFull } from "@/lib/site";
 import { formatLong, isPastDate, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -62,7 +62,7 @@ function Admin() {
   const getState = (d: Date): DayState => {
     const iso = toISODate(d);
     const confirmed = list.filter((b) => b.booking_date === iso && b.status === "confirmed");
-    const fullyBooked = confirmed.some((b) => b.preferred_time === "Full day") || confirmed.length >= TIMES.length;
+    const fullyBooked = isDayFull(confirmed.map((b) => b.preferred_time));
     if (fullyBooked || availMap.get(iso) === "booked") return "booked";
     if (availMap.get(iso) === "unavailable") return "unavailable";
     if (list.some((b) => b.booking_date === iso && b.status === "pending")) return "pending";
