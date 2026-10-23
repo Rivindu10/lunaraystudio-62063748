@@ -109,6 +109,21 @@ export const GRADUATION_TIMES = Array.from({ length: 11 }, (_, i) => `${fmtHour(
 
 export const timesFor = (service: string) => (service === "graduation" ? GRADUATION_TIMES : TIMES);
 
+export const splitSlots = (value: string) => value.split("|").map((s) => s.trim()).filter(Boolean);
+export const joinSlots = (slots: string[]) => slots.join(" | ");
+export const maxSlotsFor = (service: string) => service === "graduation" ? 3 : 1;
+export function toggleSlot(service: string, selected: string[], slot: string): string[] {
+  if (selected.includes(slot)) return selected.filter((s) => s !== slot);
+  if (!timesFor(service).includes(slot)) return selected;
+  if (service !== "graduation") return [slot];
+  if (selected.length >= maxSlotsFor(service)) return selected;
+  return [...selected, slot].sort((a, b) => timesFor(service).indexOf(a) - timesFor(service).indexOf(b));
+}
+export function validSlotSelection(service: string, selected: string[]) {
+  return selected.length > 0 && selected.length <= maxSlotsFor(service)
+    && new Set(selected).size === selected.length && selected.every((s) => timesFor(service).includes(s));
+}
+
 /** Hour range [start, end) a slot occupies — mirrors public.slot_range in the database. */
 export function slotRange(t: string): [number, number] {
   if (t === "Full day") return [0, 24];
@@ -122,10 +137,12 @@ export function slotRange(t: string): [number, number] {
 }
 
 export const slotsOverlap = (a: string, b: string) => {
-  const [a1, a2] = slotRange(a), [b1, b2] = slotRange(b);
-  return a1 < b2 && b1 < a2;
+  return splitSlots(a).some((x) => splitSlots(b).some((y) => {
+    const [a1, a2] = slotRange(x), [b1, b2] = slotRange(y);
+    return a1 < b2 && b1 < a2;
+  }));
 };
 
 /** A day is full when every hour from 7am to midnight is covered by confirmed bookings. */
 export const isDayFull = (taken: string[]) =>
-  taken.length > 0 && Array.from({ length: 17 }, (_, i) => 7 + i).every((h) => taken.some((t) => { const [s, e] = slotRange(t); return s <= h && h < e; }));
+  taken.length > 0 && Array.from({ length: 17 }, (_, i) => 7 + i).every((h) => taken.flatMap(splitSlots).some((t) => { const [s, e] = slotRange(t); return s <= h && h < e; }));

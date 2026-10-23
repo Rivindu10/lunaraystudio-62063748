@@ -9,7 +9,15 @@ import { SERVICES, isDayFull } from "@/lib/site";
 import { formatLong, isPastDate, startOfMonth, toISODate } from "@/lib/dates";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Studio Dashboard | Lunaray Studio" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [
+    { title: "Studio Dashboard | Lunaray Studio" },
+    { name: "description", content: "Private Lunaray Studio booking and availability dashboard." },
+    { property: "og:title", content: "Studio Dashboard | Lunaray Studio" },
+    { property: "og:description", content: "Private Lunaray Studio booking and availability dashboard." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Admin,
 });
 

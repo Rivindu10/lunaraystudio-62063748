@@ -27,7 +27,7 @@ interface SeoInput {
 /** Returns the full `head()` result (meta, canonical link, structured data) for a page. */
 export function seo({ title, description, path, image, noindex, jsonLd }: SeoInput) {
   const url = absoluteUrl(path);
-  const img = image ? absoluteUrl(image) : DEFAULT_OG_IMAGE;
+  const img = image && /^https:\/\//.test(image) ? image : undefined;
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   return {
     meta: [
@@ -37,10 +37,11 @@ export function seo({ title, description, path, image, noindex, jsonLd }: SeoInp
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: url },
-      { property: "og:image", content: img },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      ...(img ? [{ property: "og:image", content: img }, { name: "twitter:image", content: img }] : []),
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: img },
     ],
     links: [{ rel: "canonical", href: url }],
     scripts: blocks.map((b) => ({ type: "application/ld+json", children: jsonLdString(b) })),

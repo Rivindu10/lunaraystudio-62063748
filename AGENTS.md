@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Store multiple booking slots as pipe-separated labels in preferred_time; split them for interval comparisons so existing dashboard and notification display remain compatible.
