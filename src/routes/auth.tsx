@@ -13,6 +13,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Studio owner sign-in for Lunaray Studio." },
       { property: "og:title", content: "Studio Login | Lunaray Studio" },
       { property: "og:description", content: "Studio owner sign-in." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

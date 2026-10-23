@@ -8,7 +8,7 @@ const input = z.object({
 });
 
 const esc = (v: unknown) =>
-  String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
 
 /**
  * Emails the studio when a new booking request arrives, using the Resend API.
