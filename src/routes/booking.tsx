@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyNewBooking } from "@/lib/booking-notify.functions";
-import { SERVICES, slotsOverlap, timesFor, type ServiceSlug } from "@/lib/site";
+import { SERVICES, joinSlots, maxSlotsFor, slotsOverlap, timesFor, toggleSlot, validSlotSelection, type ServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { addMonths, formatLong, isPastDate, monthGrid, startOfMonth, toISODate } from "@/lib/dates";
 import { seo } from "@/lib/seo";
@@ -39,7 +39,7 @@ function Booking() {
   const search = Route.useSearch();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [selected, setSelected] = useState<string | null>(null);
-  const [time, setTime] = useState("");
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -47,8 +47,8 @@ function Booking() {
   const formRef = useRef<HTMLDivElement>(null);
 
   const grid = monthGrid(month);
-  const from = toISODate(grid[0]!);
-  const to = toISODate(grid[41]!);
+  const from = toISODate(grid[0] ?? month);
+  const to = toISODate(grid[41] ?? month);
   const blockedQ = useQuery({
     queryKey: ["blocked", from, to],
     queryFn: async () => {
@@ -64,15 +64,17 @@ function Booking() {
     queryKey: ["taken-slots", selected],
     enabled: !!selected,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_taken_slots", { _day: selected! });
+      if (!selected) return [];
+      const { data, error } = await supabase.rpc("get_taken_slots", { _day: selected });
       if (error) throw error;
       return (data ?? []).map((r) => r.preferred_time);
     },
   });
   const takenSlots = slotsQ.data ?? [];
-  useEffect(() => setTime(""), [selected]);
+  useEffect(() => setSelectedTimes([]), [selected]);
   const [service, setService] = useState<string>((search as { service?: string }).service ?? "");
   const slots = timesFor(service);
+  const time = joinSlots(selectedTimes);
 
   const getState = (d: Date): DayState => {
     if (isPastDate(d)) return "past";
@@ -104,11 +106,12 @@ function Booking() {
     if ((v.phone ?? "").replace(/\D/g, "").length < 7) errs.phone = "Please enter a valid contact number.";
     if (!v.service) errs.service = "Please choose a service.";
     if (!selected) errs.date = "Please select a date on the calendar.";
-    if (!v.preferred_time) errs.preferred_time = "Please choose a preferred time.";
+    if (!validSlotSelection(service, selectedTimes)) errs.preferred_time = service === "graduation" ? "Please select one to three hourly time slots." : "Please choose a preferred time.";
+    if (slotsQ.isFetching || slotsQ.isError || selectedTimes.some((t) => takenSlots.some((x) => slotsOverlap(x, t)))) errs.preferred_time = "Please wait for availability or choose available time slots.";
     if (!v.location?.trim()) errs.location = "Please tell us the event location.";
     if (v.end_date && selected && v.end_date < selected) errs.end_date = "End date must be on or after the start date.";
     setErrors(errs);
-    if (Object.keys(errs).length) return;
+    if (Object.keys(errs).length || !selected) return;
 
     setSubmitting(true);
     const { error } = await supabase.from("bookings").insert({
@@ -116,21 +119,22 @@ function Booking() {
       email: v.email.trim().slice(0, 255),
       phone: v.phone.trim().slice(0, 30),
       service: v.service as ServiceSlug,
-      booking_date: selected!,
+      booking_date: selected,
       end_date: v.end_date || null,
-      preferred_time: v.preferred_time,
+      preferred_time: time,
       location: v.location.trim().slice(0, 200),
       message: v.message?.trim().slice(0, 2000) || null,
     });
     setSubmitting(false);
     if (error) {
-      setErrors({ form: error.message.includes("available") ? error.message : "We couldn't send your request. Please try again or contact us on WhatsApp." });
+      setErrors({ form: error.message.includes("available") || error.message.includes("time slot") ? error.message : "We couldn't send your request. Please try again or contact us on WhatsApp." });
       blockedQ.refetch();
+      slotsQ.refetch();
       return;
     }
     // Email the studio about the new request; the booking is already saved, so never block on this.
-    void notifyNewBooking({ data: { email: v.email.trim().slice(0, 255), booking_date: selected!, preferred_time: v.preferred_time } }).catch(() => {});
-    setDone({ date: selected!, name: v.full_name.trim() });
+    void notifyNewBooking({ data: { email: v.email.trim().slice(0, 255), booking_date: selected, preferred_time: time } }).catch(() => {});
+    setDone({ date: selected, name: v.full_name.trim() });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -197,7 +201,7 @@ function Booking() {
             </div>
             <div>
               <Label htmlFor="service">Photography service *</Label>
-              <select id="service" name="service" value={service} onChange={(e) => { setService(e.target.value); setTime(""); }} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
+              <select id="service" name="service" value={service} onChange={(e) => { setService(e.target.value); setSelectedTimes([]); }} className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm" aria-invalid={!!errors.service}>
                 <option value="" disabled>Select a service</option>
                 {SERVICES.map((s) => <option key={s.slug} value={s.slug}>{s.title}</option>)}
               </select>
@@ -225,23 +229,26 @@ function Booking() {
                   {slotsQ.isFetching && " — checking…"}
                 </p>
               )}
-              {service === "graduation" && <p className="mt-1 text-xs text-muted-foreground">Graduation sessions are booked by the hour.</p>}
+              {service === "graduation" && <p className="mt-1 text-xs text-muted-foreground">{selectedTimes.length} / 3 hours selected</p>}
               <input type="hidden" name="preferred_time" value={time} />
-              <div className={cn("mt-2 grid gap-2", service === "graduation" && "sm:grid-cols-2")} role="radiogroup" aria-label="Preferred time">
+              <div className={cn("mt-2 grid gap-2", service === "graduation" && "sm:grid-cols-2")} role={service === "graduation" ? "group" : "radiogroup"} aria-label="Preferred time">
                 {slots.map((t) => {
                   const isTaken = takenSlots.some((x) => slotsOverlap(x, t));
+                  const isChosen = selectedTimes.includes(t);
+                  const atLimit = !isChosen && selectedTimes.length >= maxSlotsFor(service) && service === "graduation";
                   const onlyLeft = !!selected && !isTaken && slots.every((x) => x === t || takenSlots.some((y) => slotsOverlap(y, x)));
                   return (
-                    <button
+                    <Button
+                      variant="outline"
                       key={t}
                       type="button"
-                      role="radio"
-                      aria-checked={time === t}
-                      disabled={isTaken}
-                      onClick={() => setTime(t)}
+                      role={service === "graduation" ? "checkbox" : "radio"}
+                      aria-checked={isChosen}
+                      disabled={isTaken || atLimit || !selected || slotsQ.isFetching || slotsQ.isError}
+                      onClick={() => setSelectedTimes((current) => toggleSlot(service, current, t))}
                       className={cn(
-                        "flex items-center justify-between rounded-md border px-3 py-2.5 text-sm transition",
-                        time === t ? "border-primary bg-lime/30 text-forest" : "border-input bg-card text-forest hover:border-primary/50",
+                        "h-auto min-h-11 w-full items-center justify-between whitespace-normal rounded-md border px-3 py-2.5 text-left text-sm transition",
+                        isChosen ? "border-primary bg-lime/30 text-forest" : "border-input bg-card text-forest hover:border-primary/50",
                         isTaken && "cursor-not-allowed line-through opacity-50",
                       )}
                     >
@@ -250,10 +257,10 @@ function Booking() {
                         <span className="text-xs">Booked</span>
                       ) : onlyLeft ? (
                         <span className="eyebrow text-primary">Only slot left</span>
-                      ) : (
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                      )}
-                    </button>
+                       ) : isChosen ? (
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      ) : <span className="h-4 w-4 shrink-0 rounded-sm border border-input" />}
+                    </Button>
                   );
                 })}
               </div>
