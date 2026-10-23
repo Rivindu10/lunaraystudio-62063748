@@ -66,9 +66,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Professional graduation, birthday, wedding, engagement, event and casual photography." },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_US" },
-      { property: "og:image", content: DEFAULT_OG_IMAGE },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
     scripts: [{ type: "application/ld+json", children: jsonLdString(siteJsonLd()) }],
     links: [
