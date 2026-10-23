@@ -163,6 +163,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      booking_slot_ranges: { Args: { t: string }; Returns: unknown }
       get_blocked_dates: {
         Args: { _from: string; _to: string }
         Returns: {

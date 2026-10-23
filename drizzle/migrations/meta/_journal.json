@@ -50,6 +50,13 @@
       "when": 1792682115264,
       "tag": "0006_graduation_hours_7_to_18",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792726581887,
+      "tag": "0007_graduation_up_to_three_slots",
+      "breakpoints": true
     }
   ]
 }
