@@ -1,0 +1,1 @@
+DO $$ DECLARE definition text; BEGIN SELECT pg_get_functiondef('public.validate_booking()'::regprocedure) INTO definition; definition := replace(definition, 'substr(s,10,2)', 'substr(s,9,2)'); EXECUTE definition; END $$;
