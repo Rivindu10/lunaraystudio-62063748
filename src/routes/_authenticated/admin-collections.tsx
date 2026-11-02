@@ -51,7 +51,7 @@ function AdminCollections() {
   };
 
   const save = async () => {
-    if (!form.title.trim()) return toast.error("Title is required");
+    if (!form.title.trim()) { toast.error("Title is required"); return; }
     setBusy(true);
     const row = {
       title: form.title.trim(),
@@ -64,7 +64,7 @@ function AdminCollections() {
       ? await supabase.from("portfolio_collections").insert(row)
       : await supabase.from("portfolio_collections").update(row).eq("id", editing!);
     setBusy(false);
-    if (error) return toast.error(error.code === "23505" ? "A collection with this title already exists in that category." : error.message);
+    if (error) { toast.error(error.code === "23505" ? "A collection with this title already exists in that category." : error.message); return; }
     toast.success("Collection saved");
     setEditing(null);
     refresh();
