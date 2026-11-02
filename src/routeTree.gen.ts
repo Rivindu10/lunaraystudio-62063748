@@ -17,6 +17,7 @@ import { Route as BookingRouteImport } from './routes/booking'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminCollectionsRouteImport } from './routes/_authenticated/admin-collections'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
@@ -61,6 +62,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminCollectionsRoute =
+  AuthenticatedAdminCollectionsRouteImport.update({
+    id: '/admin-collections',
+    path: '/admin-collections',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/admin-collections': typeof AuthenticatedAdminCollectionsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/admin-collections': typeof AuthenticatedAdminCollectionsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin-collections': typeof AuthenticatedAdminCollectionsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/sitemap.xml'
     | '/admin'
+    | '/admin-collections'
     | '/services/$slug'
     | '/portfolio/'
     | '/services/'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/sitemap.xml'
     | '/admin'
+    | '/admin-collections'
     | '/services/$slug'
     | '/portfolio'
     | '/services'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/sitemap.xml'
     | '/_authenticated/admin'
+    | '/_authenticated/admin-collections'
     | '/services/$slug'
     | '/portfolio/'
     | '/services/'
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-collections': {
+      id: '/_authenticated/admin-collections'
+      path: '/admin-collections'
+      fullPath: '/admin-collections'
+      preLoaderRoute: typeof AuthenticatedAdminCollectionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/portfolio/': {
       id: '/portfolio/'
       path: '/portfolio'
@@ -272,10 +292,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminCollectionsRoute: typeof AuthenticatedAdminCollectionsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminCollectionsRoute: AuthenticatedAdminCollectionsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
