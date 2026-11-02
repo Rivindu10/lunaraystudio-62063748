@@ -113,10 +113,41 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_collections: {
+        Row: {
+          category: string
+          created_at: string
+          date_label: string | null
+          description: string
+          id: string
+          slug: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          date_label?: string | null
+          description?: string
+          id?: string
+          slug: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date_label?: string | null
+          description?: string
+          id?: string
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       portfolio_photos: {
         Row: {
           alt: string
           category: Database["public"]["Enums"]["portfolio_category"]
+          collection_id: string | null
           created_at: string
           id: string
           sort_order: number
@@ -125,6 +156,7 @@ export type Database = {
         Insert: {
           alt?: string
           category: Database["public"]["Enums"]["portfolio_category"]
+          collection_id?: string | null
           created_at?: string
           id?: string
           sort_order?: number
@@ -133,12 +165,21 @@ export type Database = {
         Update: {
           alt?: string
           category?: Database["public"]["Enums"]["portfolio_category"]
+          collection_id?: string | null
           created_at?: string
           id?: string
           sort_order?: number
           storage_path?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_photos_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_collections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -197,6 +238,7 @@ export type Database = {
         | "wedding"
         | "engagement"
         | "events"
+        | "casual"
       service_type:
         | "graduation"
         | "birthday"
@@ -340,6 +382,7 @@ export const Constants = {
         "wedding",
         "engagement",
         "events",
+        "casual",
       ],
       service_type: [
         "graduation",
