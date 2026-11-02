@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -102,7 +102,10 @@ function Admin() {
     <div className="mx-auto max-w-7xl px-5 pb-20 pt-32 md:px-8">
       <div className="flex items-center justify-between">
         <h1 className="font-serif text-5xl text-forest">Studio Dashboard</h1>
-        <Button variant="line" onClick={signOut}>Sign out</Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline"><Link to="/admin-collections">Manage Our Work</Link></Button>
+          <Button variant="line" onClick={signOut}>Sign out</Button>
+        </div>
       </div>
       <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_1.3fr]">
         <div>
