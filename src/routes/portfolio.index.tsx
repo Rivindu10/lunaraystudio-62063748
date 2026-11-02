@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { CollectionCard } from "@/components/CollectionCard";
-import { CATEGORIES, COLLECTIONS, collectionsByCategory } from "@/lib/portfolio";
+import { CATEGORIES, COLLECTIONS, collectionsByCategory, fromDb } from "@/lib/portfolio";
+import { useQuery } from "@tanstack/react-query";
+import { getDbCollections } from "@/lib/collections.functions";
 import { cn } from "@/lib/utils";
 import { seo, breadcrumbs } from "@/lib/seo";
 
@@ -19,9 +21,11 @@ export const Route = createFileRoute("/portfolio/")({
 
 function OurWork() {
   const [cat, setCat] = useState<string>("all");
-  const collections = collectionsByCategory(cat as never);
+  const db = useQuery({ queryKey: ["db-collections"], queryFn: () => getDbCollections() });
+  const all = [...fromDb(db.data ?? []), ...COLLECTIONS];
+  const collections = collectionsByCategory(cat as never, all);
   // Only show category tabs that actually have collections (plus "All").
-  const tabs = CATEGORIES.filter((c) => c.value === "all" || COLLECTIONS.some((x) => x.category === c.value));
+  const tabs = CATEGORIES.filter((c) => c.value === "all" || all.some((x) => x.category === c.value));
 
   return (
     <>

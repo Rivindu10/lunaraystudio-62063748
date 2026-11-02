@@ -144,11 +144,29 @@ function buildCollections(): Collection[] {
 
 export const COLLECTIONS: Collection[] = buildCollections();
 
-export const collectionsByCategory = (cat: PortfolioCategory | "all") =>
-  cat === "all" ? COLLECTIONS : COLLECTIONS.filter((c) => c.category === cat);
+export const collectionsByCategory = (cat: PortfolioCategory | "all", list: Collection[] = COLLECTIONS) =>
+  cat === "all" ? list : list.filter((c) => c.category === cat);
 
 export const findCollection = (category: string, slug: string) =>
   COLLECTIONS.find((c) => c.category === category && c.slug === slug);
+
+/** Converts admin-created collections into the shared Collection shape (skips empty ones). */
+export function fromDb(cols: { category: string; slug: string; title: string; description: string; date_label: string | null; photos: { id: string; src: string; alt: string }[] }[]): Collection[] {
+  return cols
+    .filter((c) => c.photos.length > 0)
+    .map((c) => ({
+      slug: c.slug,
+      category: c.category as PortfolioCategory,
+      title: c.title,
+      description: c.description,
+      date: c.date_label ?? undefined,
+      cover: c.photos[0]!.src,
+      photos: c.photos.map((p) => ({ id: p.id, src: p.src, alt: p.alt, category: c.category as PortfolioCategory })),
+    }));
+}
+
+export const slugify = (s: string) =>
+  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "collection";
 
 export const categoryLabel = (cat: string) =>
   CATEGORIES.find((c) => c.value === cat)?.label ?? cat;

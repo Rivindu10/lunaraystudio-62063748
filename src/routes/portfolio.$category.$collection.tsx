@@ -1,26 +1,29 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
-import { categoryLabel, findCollection } from "@/lib/portfolio";
+import { categoryLabel, findCollection, fromDb, type Collection } from "@/lib/portfolio";
+import { getDbCollections } from "@/lib/collections.functions";
 import { SERVICES } from "@/lib/site";
 import { seo, breadcrumbs } from "@/lib/seo";
 
 export const Route = createFileRoute("/portfolio/$category/$collection")({
-  loader: ({ params }) => {
-    const c = findCollection(params.category, params.collection);
+  loader: async ({ params }): Promise<{ c: Collection; isStatic: boolean }> => {
+    const s = findCollection(params.category, params.collection);
+    if (s) return { c: s, isStatic: true };
+    const db = fromDb(await getDbCollections());
+    const c = db.find((x) => x.category === params.category && x.slug === params.collection);
     if (!c) throw notFound();
-    return { category: c.category, slug: c.slug, title: c.title, description: c.description };
+    return { c, isStatic: false };
   },
   head: ({ loaderData }) => {
-    const c = loaderData ? findCollection(loaderData.category, loaderData.slug) : undefined;
-    if (!loaderData || !c)
-      return { meta: [{ title: "Collection | Lunaray Studio" }, { name: "robots", content: "noindex" }] };
+    const c = loaderData?.c;
+    if (!c) return { meta: [{ title: "Collection | Lunaray Studio" }, { name: "robots", content: "noindex" }] };
     const path = `/portfolio/${c.category}/${c.slug}`;
     return seo({
       title: `${c.title} | Lunaray Studio`,
       description: c.description || `${c.title} — a ${categoryLabel(c.category).toLowerCase()} collection by Lunaray Studio.`,
       path,
-      image: c.cover,
+      ...(loaderData.isStatic ? { image: c.cover } : {}),
       jsonLd: breadcrumbs([
         { name: "Home", path: "/" },
         { name: "Our Work", path: "/portfolio" },
@@ -32,8 +35,7 @@ export const Route = createFileRoute("/portfolio/$category/$collection")({
 });
 
 function CollectionPage() {
-  const { category, slug } = Route.useLoaderData();
-  const c = findCollection(category, slug)!;
+  const { c } = Route.useLoaderData();
 
   return (
     <>
