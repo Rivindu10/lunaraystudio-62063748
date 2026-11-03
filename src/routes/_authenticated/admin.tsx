@@ -100,9 +100,10 @@ function Admin() {
 
   return (
     <div className="mx-auto max-w-7xl px-5 pb-20 pt-32 md:px-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-serif text-5xl text-forest">Studio Dashboard</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link to="/admin-photos">Manage Site Photos</Link></Button>
           <Button asChild variant="outline"><Link to="/admin-collections">Manage Our Work</Link></Button>
           <Button variant="line" onClick={signOut}>Sign out</Button>
         </div>

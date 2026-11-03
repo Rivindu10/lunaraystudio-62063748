@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
@@ -5,11 +6,16 @@ import { categoryLabel, findCollection, fromDb, type Collection } from "@/lib/po
 import { getDbCollections } from "@/lib/collections.functions";
 import { SERVICES } from "@/lib/site";
 import { seo, breadcrumbs } from "@/lib/seo";
+import { getSitePhotos } from "@/lib/site-images.functions";
+import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/portfolio/$category/$collection")({
   loader: async ({ params }): Promise<{ c: Collection; isStatic: boolean }> => {
     const s = findCollection(params.category, params.collection);
-    if (s) return { c: s, isStatic: true };
+    if (s) {
+      const replacements = await getSitePhotos();
+      return { c: { ...s, cover: resolveSiteImage(s.cover, replacements), photos: s.photos.map(p => ({ ...p, src: resolveSiteImage(p.src, replacements) })) }, isStatic: true };
+    }
     const db = fromDb(await getDbCollections());
     const c = db.find((x) => x.category === params.category && x.slug === params.collection);
     if (!c) throw notFound();
@@ -23,7 +29,7 @@ export const Route = createFileRoute("/portfolio/$category/$collection")({
       title: `${c.title} | Lunaray Studio`,
       description: c.description || `${c.title} — a ${categoryLabel(c.category).toLowerCase()} collection by Lunaray Studio.`,
       path,
-      ...(loaderData.isStatic ? { image: c.cover } : {}),
+      image: c.cover,
       jsonLd: breadcrumbs([
         { name: "Home", path: "/" },
         { name: "Our Work", path: "/portfolio" },
@@ -40,7 +46,7 @@ function CollectionPage() {
   return (
     <>
       <section className="relative flex h-[65vh] min-h-[420px] items-end overflow-hidden">
-        <img src={c.cover} alt={c.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+        <SiteImage src={c.cover} alt={c.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-14 text-forest-foreground md:px-8">
           <Link to="/portfolio" className="eyebrow text-lime">← All collections</Link>

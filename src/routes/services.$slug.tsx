@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,14 @@ import { Gallery } from "@/components/Gallery";
 import { serviceBySlug } from "@/lib/site";
 import { SAMPLE_PHOTOS, fetchUploadedPhotos } from "@/lib/portfolio";
 import { seo, breadcrumbs, serviceJsonLd } from "@/lib/seo";
+import { getSitePhotos } from "@/lib/site-images.functions";
+import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const service = serviceBySlug(params.slug);
     if (!service) throw notFound();
-    return { slug: service.slug, title: service.title, description: service.description };
+    return { slug: service.slug, title: service.title, description: service.description, image: resolveSiteImage(service.image, await getSitePhotos()) };
   },
   head: ({ loaderData }) => {
     const service = loaderData ? serviceBySlug(loaderData.slug) : undefined;
@@ -21,7 +24,7 @@ export const Route = createFileRoute("/services/$slug")({
       title: `${loaderData.title} | Lunaray Studio`,
       description: loaderData.description,
       path,
-      image: service.image,
+      image: loaderData.image,
       jsonLd: [
         serviceJsonLd(service),
         breadcrumbs([
@@ -37,14 +40,15 @@ export const Route = createFileRoute("/services/$slug")({
 
 function ServicePage() {
   const { slug } = Route.useLoaderData();
-  const service = serviceBySlug(slug)!;
+  const service = serviceBySlug(slug);
+  if (!service) return null;
   const { data: uploaded = [] } = useQuery({ queryKey: ["portfolio"], queryFn: fetchUploadedPhotos });
   const photos = [...uploaded, ...SAMPLE_PHOTOS].filter((p) => p.category === slug);
 
   return (
     <>
       <section className="relative flex h-[75vh] min-h-[480px] items-end overflow-hidden">
-        <img src={service.image} alt={service.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+        <SiteImage src={service.image} alt={service.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-16 text-forest-foreground md:px-8">
           <Link to="/services" className="eyebrow text-lime">← All services</Link>

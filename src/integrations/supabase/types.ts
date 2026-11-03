@@ -181,6 +181,27 @@ export type Database = {
           },
         ]
       }
+      site_photos: {
+        Row: {
+          alt: string
+          image_key: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          alt?: string
+          image_key: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          alt?: string
+          image_key?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

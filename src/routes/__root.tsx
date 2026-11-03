@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -18,6 +18,8 @@ import { SiteFooter, WhatsAppButton } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DEFAULT_OG_IMAGE, SITE_NAME, jsonLdString, siteJsonLd } from "@/lib/seo";
+import { SitePhotosContext } from "@/components/SiteImage";
+import { getSitePhotos } from "@/lib/site-images.functions";
 
 function NotFoundComponent() {
   return (
@@ -54,6 +56,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: ({ context }) => context.queryClient.ensureQueryData({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 }),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -100,6 +103,7 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isStudio = pathname.startsWith("/admin") || pathname.startsWith("/auth");
+  const photos = useQuery({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 }, queryClient);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
@@ -112,6 +116,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SitePhotosContext.Provider value={photos.data ?? []}>
       <SiteNav />
       <main className="min-h-screen">
         <Outlet />
@@ -119,6 +124,7 @@ function RootComponent() {
       <SiteFooter />
       {!isStudio && pathname !== "/booking" && <WhatsAppButton />}
       <Toaster position="top-center" />
+      </SitePhotosContext.Provider>
     </QueryClientProvider>
   );
 }

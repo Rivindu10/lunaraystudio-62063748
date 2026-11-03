@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { Photo } from "@/lib/portfolio";
@@ -42,7 +43,7 @@ export function Gallery({ photos }: { photos: Photo[] }) {
             className="group relative block w-full overflow-hidden break-inside-avoid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Open photo: ${p.alt}`}
           >
-            <img
+            <SiteImage
               src={p.src}
               alt={p.alt}
               loading="lazy"
@@ -62,7 +63,7 @@ export function Gallery({ photos }: { photos: Photo[] }) {
           className="fixed inset-0 z-[60] flex items-center justify-center bg-overlay/95 p-4 animate-in fade-in duration-300"
           onClick={close}
         >
-          <img
+          <SiteImage
             src={current.src}
             alt={current.alt}
             className="max-h-[88vh] max-w-full object-contain shadow-soft"

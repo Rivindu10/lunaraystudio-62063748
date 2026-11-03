@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { Link } from "@tanstack/react-router";
 import type { Service } from "@/lib/site";
 
@@ -5,7 +6,7 @@ export function ServiceCard({ service, index }: { service: Service; index?: numb
   return (
     <article className="group">
       <Link to="/services/$slug" params={{ slug: service.slug }} className="relative block aspect-[4/5] overflow-hidden">
-        <img
+        <SiteImage
           src={service.image}
           alt={service.title}
           loading="lazy"
