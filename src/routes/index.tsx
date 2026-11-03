@@ -9,13 +9,17 @@ import { ServiceCard } from "@/components/ServiceCard";
 import { Gallery } from "@/components/Gallery";
 import { SAMPLE_PHOTOS } from "@/lib/portfolio";
 import { SERVICES } from "@/lib/site";
+import { getSitePhotos } from "@/lib/site-images.functions";
+import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/")({
-  head: () =>
+  loader: () => getSitePhotos(),
+  head: ({ loaderData }) =>
     seo({
       title: "Lunaray Studio | Timeless Photography",
       description: "Lunaray Studio — professional graduation, birthday, wedding, engagement, event and casual photography. Explore our work and request your session.",
       path: "/",
+      image: resolveSiteImage(hero, loaderData ?? []),
     }),
   component: Home,
 });

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CATEGORIES, categoryLabel, slugify } from "@/lib/portfolio";
 import { getDbCollections, type DbCollection } from "@/lib/collections.functions";
+import { ImagePlus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-collections")({
   head: () => ({ meta: [
@@ -51,6 +52,7 @@ function AdminCollections() {
   };
 
   const save = async () => {
+    if (!editing) return;
     if (!form.title.trim()) { toast.error("Title is required"); return; }
     setBusy(true);
     const row = {
@@ -62,7 +64,7 @@ function AdminCollections() {
     };
     const { error } = editing === "new"
       ? await supabase.from("portfolio_collections").insert(row)
-      : await supabase.from("portfolio_collections").update(row).eq("id", editing!);
+      : await supabase.from("portfolio_collections").update(row).eq("id", editing);
     setBusy(false);
     if (error) { toast.error(error.code === "23505" ? "A collection with this title already exists in that category." : error.message); return; }
     toast.success("Collection saved");
@@ -110,6 +112,24 @@ function AdminCollections() {
     refresh();
   };
 
+  const replacePhoto = async (p: DbCollection["photos"][number], file: File | undefined) => {
+    if (!file || busy) return;
+    if (!["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type)) { toast.error("Choose a JPG, PNG, WebP or AVIF photo."); return; }
+    setBusy(true);
+    const path = `${p.storage_path.slice(0, p.storage_path.lastIndexOf("/"))}/${crypto.randomUUID()}.${file.type.split("/")[1]}`;
+    try {
+      const { error: uploadError } = await supabase.storage.from("portfolio").upload(path, file, { contentType: file.type });
+      if (uploadError) throw uploadError;
+      const { error } = await supabase.from("portfolio_photos").update({ storage_path: path }).eq("id", p.id);
+      if (error) { await supabase.storage.from("portfolio").remove([path]); throw error; }
+      await qc.invalidateQueries({ queryKey: ["db-collections"] });
+      await qc.invalidateQueries({ queryKey: ["portfolio"] });
+      await supabase.storage.from("portfolio").remove([p.storage_path]);
+      toast.success("Photo replaced");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Photo could not be replaced."); }
+    finally { setBusy(false); }
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-5 pb-20 pt-32 md:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -117,7 +137,7 @@ function AdminCollections() {
           <Link to="/admin" className="eyebrow text-primary">← Dashboard</Link>
           <h1 className="mt-2 font-serif text-5xl text-forest">Our Work Collections</h1>
         </div>
-        <Button variant="brand" onClick={() => startEdit()}>New collection</Button>
+        <div className="flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/admin-photos">Manage Site Photos</Link></Button><Button variant="brand" onClick={() => startEdit()}>New collection</Button></div>
       </div>
 
       {editing && (
@@ -164,9 +184,10 @@ function AdminCollections() {
                   <div key={p.id} className="group relative aspect-square overflow-hidden">
                     <img src={p.src} alt={p.alt} className="h-full w-full object-cover" />
                     {i === 0 && <span className="absolute left-1 top-1 bg-card px-1 text-[10px] uppercase">Cover</span>}
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between bg-card/90 p-1 text-[11px] opacity-0 transition group-hover:opacity-100">
-                      {i !== 0 ? <button onClick={() => makeCover(c, p.id)}>Make cover</button> : <span />}
-                      <button className="text-destructive" onClick={() => deletePhoto(p.storage_path, p.id)}>Delete</button>
+                    <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-1 bg-card/90 p-1 text-[11px] md:opacity-0 md:transition md:group-hover:opacity-100 md:focus-within:opacity-100">
+                      {i !== 0 && <Button size="sm" variant="ghost" disabled={busy} onClick={() => makeCover(c, p.id)}>Make cover</Button>}
+                      <Button asChild size="icon" variant="ghost" title="Replace photo"><label aria-label={`Replace photo: ${p.alt}`} className="cursor-pointer"><ImagePlus /><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="sr-only" disabled={busy} onChange={e => { replacePhoto(p, e.target.files?.[0]); e.target.value = ""; }} /></label></Button>
+                      <Button size="sm" variant="ghost" className="text-destructive" disabled={busy} onClick={() => deletePhoto(p.storage_path, p.id)}>Delete</Button>
                     </div>
                   </div>
                 ))}

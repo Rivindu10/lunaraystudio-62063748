@@ -6,12 +6,14 @@ import { Gallery } from "@/components/Gallery";
 import { serviceBySlug } from "@/lib/site";
 import { SAMPLE_PHOTOS, fetchUploadedPhotos } from "@/lib/portfolio";
 import { seo, breadcrumbs, serviceJsonLd } from "@/lib/seo";
+import { getSitePhotos } from "@/lib/site-images.functions";
+import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const service = serviceBySlug(params.slug);
     if (!service) throw notFound();
-    return { slug: service.slug, title: service.title, description: service.description };
+    return { slug: service.slug, title: service.title, description: service.description, image: resolveSiteImage(service.image, await getSitePhotos()) };
   },
   head: ({ loaderData }) => {
     const service = loaderData ? serviceBySlug(loaderData.slug) : undefined;
@@ -22,7 +24,7 @@ export const Route = createFileRoute("/services/$slug")({
       title: `${loaderData.title} | Lunaray Studio`,
       description: loaderData.description,
       path,
-      image: service.image,
+      image: loaderData.image,
       jsonLd: [
         serviceJsonLd(service),
         breadcrumbs([
@@ -38,7 +40,8 @@ export const Route = createFileRoute("/services/$slug")({
 
 function ServicePage() {
   const { slug } = Route.useLoaderData();
-  const service = serviceBySlug(slug)!;
+  const service = serviceBySlug(slug);
+  if (!service) return null;
   const { data: uploaded = [] } = useQuery({ queryKey: ["portfolio"], queryFn: fetchUploadedPhotos });
   const photos = [...uploaded, ...SAMPLE_PHOTOS].filter((p) => p.category === slug);
 
