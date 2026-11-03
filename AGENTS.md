@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Store multiple booking slots as pipe-separated labels in preferred_time; split them for interval comparisons so existing dashboard and notification display remain compatible.
+- Use the shared site-image registry and SiteImage for public photographs; store administrator replacements in site_photos with original bundled assets as fallbacks, so existing and bundled collection images remain replaceable without source edits.
