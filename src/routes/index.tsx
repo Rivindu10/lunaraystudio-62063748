@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
 import hero from "@/assets/hero.jpg";
@@ -30,7 +31,7 @@ function Home() {
   return (
     <>
       <section className="relative flex h-[100svh] min-h-[600px] items-end overflow-hidden">
-        <img src={hero} alt="Bride and groom walking hand in hand through an olive grove at sunset" width={1920} height={1088} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+        <SiteImage src={hero} alt="Bride and groom walking hand in hand through an olive grove at sunset" width={1920} height={1088} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 text-forest-foreground md:px-8 md:pb-28">
           <p className="eyebrow animate-fade-up text-lime">Lunaray Studio</p>
@@ -56,7 +57,7 @@ function Home() {
 
       <section className="bg-sage/30">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 md:grid-cols-2 md:px-8 md:py-32">
-          <img src={about} alt="Lunaray Studio photographer framing a shot by the window" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
+          <SiteImage src={about} alt="Lunaray Studio photographer framing a shot by the window" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
           <div>
             <p className="eyebrow text-primary">About the studio</p>
             <h2 className="mt-4 font-serif text-4xl leading-tight text-forest md:text-6xl">Behind Every Photograph, There's a Story.</h2>

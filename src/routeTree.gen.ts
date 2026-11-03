@@ -18,6 +18,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminCollectionsRouteImport } from './routes/_authenticated/admin-collections'
+import { Route as AuthenticatedAdminPhotosRouteImport } from './routes/_authenticated/admin-photos'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
@@ -68,6 +69,12 @@ const AuthenticatedAdminCollectionsRoute =
     path: '/admin-collections',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPhotosRoute =
+  AuthenticatedAdminPhotosRouteImport.update({
+    id: '/admin-photos',
+    path: '/admin-photos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-collections': typeof AuthenticatedAdminCollectionsRoute
+  '/admin-photos': typeof AuthenticatedAdminPhotosRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-collections': typeof AuthenticatedAdminCollectionsRoute
+  '/admin-photos': typeof AuthenticatedAdminPhotosRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/admin-collections': typeof AuthenticatedAdminCollectionsRoute
+  '/_authenticated/admin-photos': typeof AuthenticatedAdminPhotosRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin'
     | '/admin-collections'
+    | '/admin-photos'
     | '/services/$slug'
     | '/portfolio/'
     | '/services/'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin'
     | '/admin-collections'
+    | '/admin-photos'
     | '/services/$slug'
     | '/portfolio'
     | '/services'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/admin-collections'
+    | '/_authenticated/admin-photos'
     | '/services/$slug'
     | '/portfolio/'
     | '/services/'
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCollectionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-photos': {
+      id: '/_authenticated/admin-photos'
+      path: '/admin-photos'
+      fullPath: '/admin-photos'
+      preLoaderRoute: typeof AuthenticatedAdminPhotosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/portfolio/': {
       id: '/portfolio/'
       path: '/portfolio'
@@ -293,11 +313,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAdminCollectionsRoute: typeof AuthenticatedAdminCollectionsRoute
+  AuthenticatedAdminPhotosRoute: typeof AuthenticatedAdminPhotosRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAdminCollectionsRoute: AuthenticatedAdminCollectionsRoute,
+  AuthenticatedAdminPhotosRoute: AuthenticatedAdminPhotosRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

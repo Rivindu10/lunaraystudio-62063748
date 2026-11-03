@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ function ServicePage() {
   return (
     <>
       <section className="relative flex h-[75vh] min-h-[480px] items-end overflow-hidden">
-        <img src={service.image} alt={service.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+        <SiteImage src={service.image} alt={service.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-16 text-forest-foreground md:px-8">
           <Link to="/services" className="eyebrow text-lime">← All services</Link>

@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import about from "@/assets/about.jpg";
 import engagement from "@/assets/engagement.jpg";
@@ -21,7 +22,7 @@ function About() {
     <>
       <PageHeader eyebrow="About Lunaray Studio" title={<>Behind Every Photograph, <em>There's a Story.</em></>} />
       <section className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-24 md:grid-cols-2 md:px-8">
-        <img src={about} alt="Photographer at work with a film camera" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
+        <SiteImage src={about} alt="Photographer at work with a film camera" loading="lazy" width={896} height={1152} className="aspect-[4/5] w-full object-cover" />
         <div className="space-y-6 leading-relaxed text-muted-foreground">
           <p className="font-serif text-3xl leading-snug text-forest">
             “At Lunaray Studio, we believe the most beautiful photographs are more than images.”
@@ -37,7 +38,7 @@ function About() {
         </div>
       </section>
       <section className="relative h-[60vh] overflow-hidden">
-        <img src={engagement} alt="Couple embracing in a meadow" loading="lazy" className="h-full w-full object-cover" />
+        <SiteImage src={engagement} alt="Couple embracing in a meadow" loading="lazy" className="h-full w-full object-cover" />
         <div className="absolute inset-0 flex items-center justify-center bg-overlay/40 px-5 text-center">
           <p className="max-w-3xl font-serif text-4xl italic text-forest-foreground md:text-6xl">Natural light. Honest emotion. Timeless frames.</p>
         </div>

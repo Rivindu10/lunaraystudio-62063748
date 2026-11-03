@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Gallery } from "@/components/Gallery";
@@ -40,7 +41,7 @@ function CollectionPage() {
   return (
     <>
       <section className="relative flex h-[65vh] min-h-[420px] items-end overflow-hidden">
-        <img src={c.cover} alt={c.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+        <SiteImage src={c.cover} alt={c.title} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         <div className="absolute inset-0 bg-hero-overlay" />
         <div className="relative mx-auto w-full max-w-7xl px-5 pb-14 text-forest-foreground md:px-8">
           <Link to="/portfolio" className="eyebrow text-lime">← All collections</Link>

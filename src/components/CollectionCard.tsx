@@ -1,3 +1,4 @@
+import { SiteImage } from "@/components/SiteImage";
 import { Link } from "@tanstack/react-router";
 import { categoryLabel, type Collection } from "@/lib/portfolio";
 
@@ -5,7 +6,7 @@ export function CollectionCard({ collection: c }: { collection: Collection }) {
   return (
     <article className="group">
       <Link to="/portfolio/$category/$collection" params={{ category: c.category, collection: c.slug }} className="relative block aspect-[4/5] overflow-hidden">
-        <img
+        <SiteImage
           src={c.cover}
           alt={c.title}
           loading="lazy"
