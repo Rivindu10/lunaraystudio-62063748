@@ -25,7 +25,7 @@ export const getSitePhotos = createServerFn({ method: "GET" }).handler(async ():
     const signedUrl = urls?.[i]?.signedUrl;
     if (!signedUrl) return [];
     const url = new URL(signedUrl);
-    const browserBase = new URL(import.meta.env.VITE_SUPABASE_URL);
+    const browserBase = new URL(import.meta.env['VITE_SUPABASE_URL']);
     url.host = browserBase.host;
     url.protocol = browserBase.protocol;
     return [{ ...p, src: url.toString() }];

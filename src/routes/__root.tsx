@@ -103,7 +103,7 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isStudio = pathname.startsWith("/admin") || pathname.startsWith("/auth");
-  const photos = useQuery({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 });
+  const photos = useQuery({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 }, queryClient);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
