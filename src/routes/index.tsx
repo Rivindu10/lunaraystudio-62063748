@@ -13,7 +13,8 @@ import { getSitePhotos } from "@/lib/site-images.functions";
 import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/")({
-  loader: () => getSitePhotos(),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 }),
   head: ({ loaderData }) =>
     seo({
       title: "Lunaray Studio | Timeless Photography",
