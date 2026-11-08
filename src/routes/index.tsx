@@ -13,14 +13,18 @@ import { getSitePhotos } from "@/lib/site-images.functions";
 import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/")({
-  loader: () => getSitePhotos(),
-  head: ({ loaderData }) =>
-    seo({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 }),
+  head: ({ loaderData }) => {
+    const result = seo({
       title: "Lunaray Studio | Timeless Photography",
       description: "Lunaray Studio — professional graduation, birthday, wedding, engagement, event and casual photography. Explore our work and request your session.",
       path: "/",
       image: resolveSiteImage(hero, loaderData ?? []),
-    }),
+    });
+    // Preload the hero photo so it starts downloading immediately.
+    return { ...result, links: [...result.links, { rel: "preload", as: "image", href: hero, fetchPriority: "high" }] };
+  },
   component: Home,
 });
 

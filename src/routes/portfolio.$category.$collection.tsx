@@ -10,13 +10,14 @@ import { getSitePhotos } from "@/lib/site-images.functions";
 import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/portfolio/$category/$collection")({
-  loader: async ({ params }): Promise<{ c: Collection; isStatic: boolean }> => {
+  loader: async ({ params, context }): Promise<{ c: Collection; isStatic: boolean }> => {
     const s = findCollection(params.category, params.collection);
     if (s) {
-      const replacements = await getSitePhotos();
+      const replacements = await context.queryClient.ensureQueryData({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 });
       return { c: { ...s, cover: resolveSiteImage(s.cover, replacements), photos: s.photos.map(p => ({ ...p, src: resolveSiteImage(p.src, replacements) })) }, isStatic: true };
     }
-    const db = fromDb(await getDbCollections());
+    const dbCols = await context.queryClient.ensureQueryData({ queryKey: ["db-collections"], queryFn: () => getDbCollections(), staleTime: 60000 });
+    const db = fromDb(dbCols);
     const c = db.find((x) => x.category === params.category && x.slug === params.collection);
     if (!c) throw notFound();
     return { c, isStatic: false };

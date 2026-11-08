@@ -10,10 +10,11 @@ import { getSitePhotos } from "@/lib/site-images.functions";
 import { resolveSiteImage } from "@/lib/site-images";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const service = serviceBySlug(params.slug);
     if (!service) throw notFound();
-    return { slug: service.slug, title: service.title, description: service.description, image: resolveSiteImage(service.image, await getSitePhotos()) };
+    const sitePhotos = await context.queryClient.ensureQueryData({ queryKey: ["site-photos"], queryFn: () => getSitePhotos(), staleTime: 60000 });
+    return { slug: service.slug, title: service.title, description: service.description, image: resolveSiteImage(service.image, sitePhotos) };
   },
   head: ({ loaderData }) => {
     const service = loaderData ? serviceBySlug(loaderData.slug) : undefined;
